@@ -11,3 +11,11 @@ request.onload = function() {
     document.querySelector('body').innerHTML = 'Bikes available: ' + station_status.num_bikes_available;
 };
 request.send();
+
+var request2 = new XMLHttpRequest();
+request2.open('GET', 'https://path.api.razza.dev/v1/stations/hoboken/realtime');
+request2.onload = function() {
+    var data = JSON.parse(request2.response);
+    console.log(data);
+};
+request2.send();
