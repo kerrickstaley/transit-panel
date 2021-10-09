@@ -9,21 +9,13 @@
 }
 .leave-in-min {
     font-size: 96pt;
-    line-height: 96pt;
-    position: relative;
-    margin-left: 2pt;
+    margin-left: -31pt;
 }
 .leave-in-min::before {
     content: "leave in";
-    position: absolute;
     font-size: 10pt;
-    bottom: 10pt;
-    left: -6ch;
 }
 .leave-in-min::after {
     content: "min";
-    position: absolute;
     font-size: 10pt;
-    bottom: 10pt;
-    right: -3ch;
 }
