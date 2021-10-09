@@ -7,3 +7,23 @@
 .row {
     flex: 1;
 }
+.leave-in-min {
+    font-size: 96pt;
+    line-height: 96pt;
+    position: relative;
+    margin-left: 2pt;
+}
+.leave-in-min::before {
+    content: "leave in";
+    position: absolute;
+    font-size: 9pt;
+    bottom: 6pt;
+    left: -6ch;
+}
+.leave-in-min::after {
+    content: "min";
+    position: absolute;
+    font-size: 9pt;
+    bottom: 6pt;
+    right: -3ch;
+}
