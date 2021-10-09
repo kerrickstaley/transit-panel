@@ -16,14 +16,14 @@
 .leave-in-min::before {
     content: "leave in";
     position: absolute;
-    font-size: 9pt;
-    bottom: 6pt;
+    font-size: 10pt;
+    bottom: 10pt;
     left: -6ch;
 }
 .leave-in-min::after {
     content: "min";
     position: absolute;
-    font-size: 9pt;
-    bottom: 6pt;
+    font-size: 10pt;
+    bottom: 10pt;
     right: -3ch;
 }
