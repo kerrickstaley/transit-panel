@@ -8,6 +8,7 @@
 .leave-in-min {
     font-size: 96pt;
     margin-left: -31pt;
+    padding-top: 24pt;
     align-self: center;
 }
 .leave-in-min::before {
