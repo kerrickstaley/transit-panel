@@ -8,6 +8,7 @@
 .leave-in-min {
     font-size: 96pt;
     margin-left: -31pt;
+    align-self: center;
 }
 .leave-in-min::before {
     content: "leave in";
