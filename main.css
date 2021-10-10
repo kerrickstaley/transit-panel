@@ -11,7 +11,7 @@
 }
 .leave-in-min {
     font-size: 96pt;
-    padding-top: 24pt;  /* Depends on font size defined on previous line. Seems to be 1/3 of above value. */
+    padding-top: 0.3em;
     margin-left: -32pt;  /* Depends on font size and length of "leave in" text. */
     align-self: center;
 }
