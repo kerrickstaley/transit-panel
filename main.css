@@ -9,8 +9,13 @@
     margin: 8pt;
     font-size: 24pt;
 }
+.row-title-and-icon > img {
+    height: 80px;
+    margin: 16pt;
+    margin-top: 0pt;
+}
 .leave-in-min {
-    font-size: 96pt;
+    font-size: 128pt;
     padding-top: 0.3em;
     margin-left: -32pt;  /* Depends on font size and length of "leave in" text. */
     align-self: center;
