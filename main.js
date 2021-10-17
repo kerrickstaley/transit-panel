@@ -23,33 +23,43 @@ var station_status_url = 'https://gbfs.citibikenyc.com/gbfs/en/station_status.js
 // request2.send();
 
 const pathApiUrl = 'https://path.api.razza.dev/v1/stations/hoboken/realtime';
-const pathWalkTimeSec = 600;
-function populatePathToWtcInfo(elem) {
-    const route = "JSQ_33_HOB";
-    const direction = "TO_NY";
-    var request = new XMLHttpRequest();
-    request.open('GET', pathApiUrl, true);
-    request.onload = function() {
-        var data = JSON.parse(request.response);
-        var trainsRaw = data.upcomingTrains.filter(
+const walkTimeFromAptDoorToPathSec = 11 * 60;
+
+// Get the number of seconds until all the upcoming PATH departures for a given route and direction.
+//
+// The valid values for route and direction are defined at https://github.com/mrazza/path-data
+//
+// Returns a Promise holding an array of Numbers.
+function getSecsUntilNextPathDepartures(route, direction) {
+    return fetch(pathApiUrl).then(resp => {
+        if (!resp.ok) {
+            throw new Error(`HTTP error fetching PATH API URL: ${response.status}`);
+        }
+        return resp.body.getReader().read();
+    }).then(dataArr => {
+        var data = JSON.parse(new TextDecoder().decode(dataArr.value));
+        var trains = data.upcomingTrains.filter(
             train => train.route == route && train.direction == direction
         );
-        console.log(trainsRaw);
-        var trains = trainsRaw.map(train => {
-            var leaveTimeSec = (Date.parse(train.projectedArrival) - new Date())/1000 - pathWalkTimeSec;
-            var leaveTimeMin = Math.floor(leaveTimeSec/60);
-            return leaveTimeMin;
-        }).filter(leaveTimeMin => leaveTimeMin >= -1);
-        console.log(trains);
+        return trains.map(train => (Date.parse(train.projectedArrival) - new Date()) / 1000);
+    });
+}
 
-        elem.innerHTML = "";
-        elem.style["background-color"] = "#c2fcb6";
-        elem.innerHTML = "PATH to WTC";
-    };
-    request.send();
-};
-// populatePathToWtcInfo(document.querySelector(".row"))
+// Returns a promise with the number of seconds until you must leave to catch the next PATH train.
+function getPathLeaveSec(route, direction) {
+    return getSecsUntilNextPathDepartures(route, direction).then(secs => {
+        for (const sec of secs) {
+            const leaveSec = sec - walkTimeFromAptDoorToPathSec;
+            if (leaveSec >= 0) {
+                return leaveSec;
+            }
+        }
+    });
+}
 
+function get33StPathLeaveSec() {
+    return getPathLeaveSec('JSQ_33_HOB', 'TO_NY');
+}
 
 // https://www.nywaterway.com/HobokenNJTT-WFCRoute.aspx#weekday
 const hobokenToBrookfieldWeekdayDepartureTimes = [
@@ -138,7 +148,7 @@ function getSecUntilNextDeparture(date, departureTimes) {
 
 function getFerryLeaveSec(date, departureTimes, walkTimeSec) {
     var queryDate = new Date(date * 1 + walkTimeSec * 1000);
-    return getSecUntilNextDeparture(queryDate, departureTimes);
+    return Promise.resolve(getSecUntilNextDeparture(queryDate, departureTimes));
 }
 
 function getBrookfieldFerryLeaveSec() {
@@ -147,15 +157,20 @@ function getBrookfieldFerryLeaveSec() {
 
 // Display remaining minutes before you need to leave in order to catch a given transit option.
 //
-// Runs the function to compute the remaining time, displays that value in the given div, then
-// calls setTimeout to run the update again when the value changes.
+// Runs the function to compute the remaining time (returned as a Promise), displays that value
+// in the given div, then calls setTimeout to run the update again when the value changes.
 function displayLeaveMinUpdateLoop(divId, leaveSecFunc) {
-    let leaveSec = leaveSecFunc();
-    let leaveMin = Math.floor(leaveSec / 60);
-    // This is probably poor style.
-    document.getElementById(divId).innerHTML = leaveMin;
-    // + .1 is a little hack to make sure that the minute has definitely rolled over by the time we get there.
-    setTimeout(() => displayLeaveMinUpdateLoop(divId, leaveSecFunc), (((leaveSec % 60) + 60) % 60 + .1) * 1000);
+    const secPerMin = 60;  // Can set this to 1 to see the value update every second for testing.
+    leaveSecFunc().then(leaveSec => {
+        let leaveMin = Math.floor(leaveSec / secPerMin);
+        // This is probably poor style.
+        document.getElementById(divId).innerHTML = leaveMin;
+        // + .1 is a little hack to make sure that the minute has definitely rolled over by the time we get there.
+        setTimeout(() => displayLeaveMinUpdateLoop(divId, leaveSecFunc),
+                   (((leaveSec % secPerMin) + secPerMin) % secPerMin + .1) * 1000);
+    });
 }
 
 displayLeaveMinUpdateLoop('brookfield-ferry-leave-in-min', getBrookfieldFerryLeaveSec);
+// TODO I'm displaying the 33rd St PATH info for testing but I should display the WTC PATH info.
+displayLeaveMinUpdateLoop('wtc-path-leave-in-min', get33StPathLeaveSec);
