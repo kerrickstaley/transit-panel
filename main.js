@@ -137,7 +137,7 @@ function getSecUntilNextDeparture(date, departureTimes) {
 }
 
 function getFerryLeaveSec(date, departureTimes, walkTimeSec) {
-    var queryDate = new Date(date + walkTimeSec * 1000);
+    var queryDate = new Date(date * 1 + walkTimeSec * 1000);
     return getSecUntilNextDeparture(queryDate, departureTimes);
 }
 
