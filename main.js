@@ -141,10 +141,14 @@ function getFerryLeaveSec(date, departureTimes, walkTimeSec) {
     return getSecUntilNextDeparture(queryDate, departureTimes);
 }
 
-function getBrookfieldFerrySec() {
+function getBrookfieldFerryLeaveSec() {
     return getFerryLeaveSec(new Date(), hobokenToBrookfieldWeekdayDepartureTimes, walkTimeFromAptDoorToFerrySec);
 }
 
+// Display remaining minutes before you need to leave in order to catch a given transit option.
+//
+// Runs the function to compute the remaining time, displays that value in the given div, then
+// calls setTimeout to run the update again when the value changes.
 function displayLeaveMinUpdateLoop(divId, leaveSecFunc) {
     let leaveSec = leaveSecFunc();
     let leaveMin = Math.floor(leaveSec / 60);
@@ -154,4 +158,4 @@ function displayLeaveMinUpdateLoop(divId, leaveSecFunc) {
     setTimeout(() => displayLeaveMinUpdateLoop(divId, leaveSecFunc), (((leaveSec % 60) + 60) % 60 + .1) * 1000);
 }
 
-displayLeaveMinUpdateLoop('brookfield-ferry-leave-in-min', getBrookfieldFerrySec);
+displayLeaveMinUpdateLoop('brookfield-ferry-leave-in-min', getBrookfieldFerryLeaveSec);
