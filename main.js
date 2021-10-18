@@ -171,9 +171,18 @@ function displayLeaveMinUpdateLoop(divId, leaveSecFunc) {
     });
 }
 
+function addFullscreenButton() {
+    var button = document.createElement('button');
+    button.innerHTML = 'Click to go fullscreen';
+    document.body.appendChild(button);
+    button.onclick = el => {
+        document.querySelector('body').requestFullscreen().catch(err => {
+            alert('Unable to fullscreen: ' + err.message);
+        });
+        button.style['display'] = 'none';
+    };
+}
 displayLeaveMinUpdateLoop('brookfield-ferry-leave-in-min', getBrookfieldFerryLeaveSec);
 // TODO I'm displaying the 33rd St PATH info for testing but I should display the WTC PATH info.
 displayLeaveMinUpdateLoop('wtc-path-leave-in-min', get33StPathLeaveSec);
-document.querySelector('body').requestFullscreen().catch(err => {
-    alert('Unable to fullscreen: ' + err.message);
-});
+addFullscreenButton();
