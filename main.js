@@ -61,6 +61,10 @@ function get33StPathLeaveSec() {
     return getPathLeaveSec('JSQ_33_HOB', 'TO_NY');
 }
 
+function getWtcPathLeaveSec() {
+    return getPathLeaveSec('HOB_WTC', 'TO_NY');
+}
+
 // https://www.nywaterway.com/HobokenNJTT-WFCRoute.aspx#weekday
 const hobokenToBrookfieldWeekdayDepartureTimes = [
     '6:05 AM',
@@ -183,6 +187,5 @@ function addFullscreenButton() {
     };
 }
 displayLeaveMinUpdateLoop('brookfield-ferry-leave-in-min', getBrookfieldFerryLeaveSec);
-// TODO I'm displaying the 33rd St PATH info for testing but I should display the WTC PATH info.
-displayLeaveMinUpdateLoop('wtc-path-leave-in-min', get33StPathLeaveSec);
+displayLeaveMinUpdateLoop('wtc-path-leave-in-min', getWtcPathLeaveSec);
 addFullscreenButton();
