@@ -1,5 +1,5 @@
 * {
-    font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
 }
 .row {
     display: flex;
@@ -22,7 +22,7 @@
 }
 .leave-in-min {
     font-size: 128pt;
-    padding-top: 0.3em;
+    padding-top: 0.05em;
     margin-left: -32pt;  /* Depends on font size and length of "leave in" text. */
     align-self: center;
 }
