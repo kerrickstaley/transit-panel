@@ -1,5 +1,25 @@
 "use strict";
 
+// Given a Luxon DateTime and a string like '8:30 AM', return a Luxon DateTime with the same date as
+// the input DateTime but with the time modified to be the time expressed by the string.
+function dateTimeWithModifiedTime(dateTime, timeStr) {
+    let [time, ampm] = timeStr.split(' ');
+    let [hourStr, minute] = time.split(':');
+    let hour = parseInt(hourStr);
+    if (ampm === 'AM' && hour == 12) {
+        hour = 0;
+    }
+    if (ampm === 'PM' && hour != 12) {
+        hour += 12;
+    }
+    var obj = dateTime.toObject();
+    obj.hour = hour;
+    obj.minute = minute;
+    obj.second = 0;
+    obj.millisecond = 0;
+    return luxon.DateTime.fromObject(obj);
+}
+
 // Take a list of departure times, expressed as strings like "8:30 AM", and get the number of seconds
 // from a given Date to those times. Times are interpreted as the next instance of that time, in the
 // local timezone, that is not before the given Date.
@@ -8,21 +28,7 @@ function getSecUntilDepartures(date, departureTimes) {
     var Duration = luxon.Duration;
     const datetime = DateTime.fromJSDate(date);
     return departureTimes.map(time_ampm => {
-        let [time, ampm] = time_ampm.split(' ');
-        let [hour_str, minute] = time.split(':');
-        let hour = parseInt(hour_str);
-        if (ampm === 'AM' && hour == 12) {
-            hour = 0;
-        }
-        if (ampm === 'PM' && hour != 12) {
-            hour += 12;
-        }
-        var obj = datetime.toObject();
-        obj.hour = hour;
-        obj.minute = minute;
-        obj.second = 0;
-        obj.millisecond = 0;
-        var departure = DateTime.fromObject(obj);
+        var departure = dateTimeWithModifiedTime(datetime, time_ampm);
         if (departure < datetime) {
             departure += Duration.fromObject({days: 1});
         }
