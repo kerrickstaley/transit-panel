@@ -44,6 +44,17 @@ const hobokenToBrookfieldFerryWeekdayDepartureTimes = [
     '7:00 PM',
 ];
 
+const hobokenToBrookfieldFerryWeekSchedule = [
+    hobokenToBrookfieldFerryWeekdayDepartureTimes,
+    hobokenToBrookfieldFerryWeekdayDepartureTimes,
+    hobokenToBrookfieldFerryWeekdayDepartureTimes,
+    hobokenToBrookfieldFerryWeekdayDepartureTimes,
+    hobokenToBrookfieldFerryWeekdayDepartureTimes,
+    // This ferry does run on the weekend, but I never take it, so the schedule is empty here.
+    [],
+    [],
+]
+
 // https://www.panynj.gov/path/en/schedules-maps/hoboken-wtc-weekday-schedule.html
 const pathHobokenToWtcWeekdayDepartureTimes = [
     '6:14 AM',

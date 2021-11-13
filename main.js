@@ -129,7 +129,7 @@ function getWtcPathLeaveSec() {
 }
 
 function getBrookfieldFerryLeaveSec() {
-    return getLeaveSecFromSchedule(new Date(), hobokenToBrookfieldFerryWeekdayDepartureTimes, walkTimeFromAptDoorToFerrySec);
+    return getLeaveSecFromWeekSchedule(new Date(), hobokenToBrookfieldFerryWeekSchedule, walkTimeFromAptDoorToFerrySec);
 }
 
 // Display remaining minutes before you need to leave in order to catch a given transit option.
