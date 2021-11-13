@@ -1,5 +1,9 @@
 "use strict";
 
+const walkTimeFromAptDoorToPathSec = 10 * 60;
+const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
+const maxLeaveSecToShowOption = 90 * 60;
+
 // Given a Luxon DateTime and a string like '8:30 AM', return a Luxon DateTime with the same date as
 // the input DateTime but with the time modified to be the time expressed by the string.
 function dateTimeWithModifiedTime(dateTime, timeStr) {
@@ -82,7 +86,6 @@ function getLeaveSecFromWeekSchedule(date, weekSchedule, walkTimeSec) {
 }
 
 const pathApiUrl = 'https://path.api.razza.dev/v1/stations/hoboken/realtime';
-const walkTimeFromAptDoorToPathSec = 10 * 60;
 
 // Get the number of seconds until all the upcoming PATH departures for a given route and direction.
 //
@@ -125,8 +128,6 @@ function getWtcPathLeaveSec() {
     return getLeaveSecFromWeekSchedule(new Date(), pathHobokenToWtcWeekSchedule, walkTimeFromAptDoorToPathSec);
 }
 
-const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
-
 function getBrookfieldFerryLeaveSec() {
     return getLeaveSecFromSchedule(new Date(), hobokenToBrookfieldFerryWeekdayDepartureTimes, walkTimeFromAptDoorToFerrySec);
 }
@@ -138,9 +139,15 @@ function getBrookfieldFerryLeaveSec() {
 function displayLeaveMinUpdateLoop(rowId, leaveSecFunc) {
     const secPerMin = 60;  // Can set this to 1 to see the value update every second for testing.
     leaveSecFunc().then(leaveSec => {
+        let row = document.getElementById(rowId);
+        if (leaveSec < maxLeaveSecToShowOption) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
         let leaveMin = Math.floor(leaveSec / secPerMin);
         // This is probably poor style.
-        document.getElementById(rowId).querySelector('.leave-in-min').innerHTML = leaveMin;
+        row.querySelector('.leave-in-min').innerHTML = leaveMin;
         // + .1 is a little hack to make sure that the minute has definitely rolled over by the time we get there.
         setTimeout(() => displayLeaveMinUpdateLoop(divId, leaveSecFunc),
                    (((leaveSec % secPerMin) + secPerMin) % secPerMin + .1) * 1000);
