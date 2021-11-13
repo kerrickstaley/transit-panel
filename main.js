@@ -149,7 +149,7 @@ function displayLeaveMinUpdateLoop(rowId, leaveSecFunc) {
         // This is probably poor style.
         row.querySelector('.leave-in-min').innerHTML = leaveMin;
         // + .1 is a little hack to make sure that the minute has definitely rolled over by the time we get there.
-        setTimeout(() => displayLeaveMinUpdateLoop(divId, leaveSecFunc),
+        setTimeout(() => displayLeaveMinUpdateLoop(rowId, leaveSecFunc),
                    (((leaveSec % secPerMin) + secPerMin) % secPerMin + .1) * 1000);
     });
 }
