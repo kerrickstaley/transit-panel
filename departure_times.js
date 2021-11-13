@@ -45,7 +45,7 @@ const hobokenToBrookfieldFerryWeekdayDepartureTimes = [
 ];
 
 // https://www.panynj.gov/path/en/schedules-maps/hoboken-wtc-weekday-schedule.html
-const hobokenToWtcPathWeekdayDepartureTimes = [
+const pathHobokenToWtcWeekdayDepartureTimes = [
     '6:14 AM',
     '6:24 AM',
     '6:34 AM',
@@ -147,6 +147,16 @@ const hobokenToWtcPathWeekdayDepartureTimes = [
     '10:41 PM',
     '10:56 PM',
     '11:11 PM',
+];
+
+const pathHobokenToWtcWeekSchedule = [
+    pathHobokenToWtcWeekdayDepartureTimes,
+    pathHobokenToWtcWeekdayDepartureTimes,
+    pathHobokenToWtcWeekdayDepartureTimes,
+    pathHobokenToWtcWeekdayDepartureTimes,
+    pathHobokenToWtcWeekdayDepartureTimes,
+    [],
+    [],
 ];
 
 // Merged from

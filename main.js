@@ -122,7 +122,7 @@ function getPathTo33rdLeaveSec() {
 }
 
 function getWtcPathLeaveSec() {
-    return getLeaveSecFromSchedule(new Date(), hobokenToWtcPathWeekdayDepartureTimes, walkTimeFromAptDoorToPathSec);
+    return getLeaveSecFromWeekSchedule(new Date(), pathHobokenToWtcWeekSchedule, walkTimeFromAptDoorToPathSec);
 }
 
 const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
