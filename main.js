@@ -27,8 +27,8 @@ function getSecUntilDepartures(date, departureTimes) {
     var DateTime = luxon.DateTime;
     var Duration = luxon.Duration;
     const datetime = DateTime.fromJSDate(date);
-    return departureTimes.map(time_ampm => {
-        var departure = dateTimeWithModifiedTime(datetime, time_ampm);
+    return departureTimes.map(timeAmPm => {
+        var departure = dateTimeWithModifiedTime(datetime, timeAmPm);
         if (departure < datetime) {
             departure += Duration.fromObject({days: 1});
         }
@@ -45,9 +45,40 @@ function getSecUntilNextDeparture(date, departureTimes) {
     return Math.min(...getSecUntilDepartures(date, departureTimes));
 }
 
+
+// Get number of seconds until next departure. Takes a whole-week schedule and a Date.
+//
+// A whole week schedule is a list of 7 lists of strings. The first sublist represents Monday, the
+// second represents Tuesday, etc. Each sublist has a list of strings like "8:30 AM" (i.e. the same)
+// format that getSecUntilNextDeparture expects).
+//
+// The return value is the number of seconds until the first departure time that is not before `date`.
+function getSecUntilNextDepartureFromWeekSchedule(date, schedule) {
+    var DateTime = luxon.DateTime;
+    var Duration = luxon.Duration;
+    const dateTime = DateTime.fromJSDate(date);
+    for (let dayDelta = 0; dayDelta < 8; dayDelta += 1) {
+        const futureDateTime = new DateTime(dateTime + Duration.fromObject({days: dayDelta}));
+        const daySchedule = schedule[futureDateTime.weekday - 1];
+        for (const timeAmPm of daySchedule) {
+            const departure = dateTimeWithModifiedTime(futureDateTime, timeAmPm);
+            if (departure >= dateTime) {
+                return (departure - dateTime) / 1000;
+            }
+        }
+    }
+    console.log('There were no future departures in the entire week schedule');
+    return Number.NaN;
+}
+
 function getLeaveSecFromSchedule(date, departureTimes, walkTimeSec) {
     var queryDate = new Date(date * 1 + walkTimeSec * 1000);
     return Promise.resolve(getSecUntilNextDeparture(queryDate, departureTimes));
+}
+
+function getLeaveSecFromWeekSchedule(date, weekSchedule, walkTimeSec) {
+    var queryDate = new Date(date * 1 + walkTimeSec * 1000);
+    return Promise.resolve(getSecUntilNextDepartureFromWeekSchedule(queryDate, weekSchedule));
 }
 
 const pathApiUrl = 'https://path.api.razza.dev/v1/stations/hoboken/realtime';
@@ -86,8 +117,8 @@ function getPathLeaveSecFromApi(route, direction) {
     });
 }
 
-function get33StPathLeaveSec() {
-    return getPathLeaveSecFromApi('JSQ_33_HOB', 'TO_NY');
+function getPathTo33rdLeaveSec() {
+    return getLeaveSecFromWeekSchedule(new Date(), pathHobokenTo33rdWeekSchedule, walkTimeFromAptDoorToPathSec);
 }
 
 function getWtcPathLeaveSec() {
@@ -129,4 +160,5 @@ function addFullscreenButton() {
 }
 displayLeaveMinUpdateLoop('brookfield-ferry-leave-in-min', getBrookfieldFerryLeaveSec);
 displayLeaveMinUpdateLoop('wtc-path-leave-in-min', getWtcPathLeaveSec);
+displayLeaveMinUpdateLoop('path-to-33rd-leave-in-min', getPathTo33rdLeaveSec);
 addFullscreenButton();
