@@ -45,7 +45,7 @@ function getLeaveSecFromSchedule(date, departureTimes, walkTimeSec) {
 }
 
 const pathApiUrl = 'https://path.api.razza.dev/v1/stations/hoboken/realtime';
-const walkTimeFromAptDoorToPathSec = 11 * 60;
+const walkTimeFromAptDoorToPathSec = 10 * 60;
 
 // Get the number of seconds until all the upcoming PATH departures for a given route and direction.
 //
@@ -88,7 +88,7 @@ function getWtcPathLeaveSec() {
     return getLeaveSecFromSchedule(new Date(), hobokenToWtcPathWeekdayDepartureTimes, walkTimeFromAptDoorToPathSec);
 }
 
-const walkTimeFromAptDoorToFerrySec = 10 * 60;
+const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
 
 function getBrookfieldFerryLeaveSec() {
     return getLeaveSecFromSchedule(new Date(), hobokenToBrookfieldFerryWeekdayDepartureTimes, walkTimeFromAptDoorToFerrySec);
