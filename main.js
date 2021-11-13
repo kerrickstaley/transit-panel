@@ -58,7 +58,7 @@ function getSecUntilNextDepartureFromWeekSchedule(date, schedule) {
     var Duration = luxon.Duration;
     const dateTime = DateTime.fromJSDate(date);
     for (let dayDelta = 0; dayDelta < 8; dayDelta += 1) {
-        const futureDateTime = new DateTime(dateTime + Duration.fromObject({days: dayDelta}));
+        const futureDateTime = dateTime.plus(Duration.fromObject({days: dayDelta}));
         const daySchedule = schedule[futureDateTime.weekday - 1];
         for (const timeAmPm of daySchedule) {
             const departure = dateTimeWithModifiedTime(futureDateTime, timeAmPm);
