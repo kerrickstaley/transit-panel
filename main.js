@@ -135,12 +135,12 @@ function getBrookfieldFerryLeaveSec() {
 //
 // Runs the function to compute the remaining time (returned as a Promise), displays that value
 // in the given div, then calls setTimeout to run the update again when the value changes.
-function displayLeaveMinUpdateLoop(divId, leaveSecFunc) {
+function displayLeaveMinUpdateLoop(rowId, leaveSecFunc) {
     const secPerMin = 60;  // Can set this to 1 to see the value update every second for testing.
     leaveSecFunc().then(leaveSec => {
         let leaveMin = Math.floor(leaveSec / secPerMin);
         // This is probably poor style.
-        document.getElementById(divId).innerHTML = leaveMin;
+        document.getElementById(rowId).querySelector('.leave-in-min').innerHTML = leaveMin;
         // + .1 is a little hack to make sure that the minute has definitely rolled over by the time we get there.
         setTimeout(() => displayLeaveMinUpdateLoop(divId, leaveSecFunc),
                    (((leaveSec % secPerMin) + secPerMin) % secPerMin + .1) * 1000);
@@ -158,7 +158,7 @@ function addFullscreenButton() {
         button.style['display'] = 'none';
     };
 }
-displayLeaveMinUpdateLoop('brookfield-ferry-leave-in-min', getBrookfieldFerryLeaveSec);
-displayLeaveMinUpdateLoop('wtc-path-leave-in-min', getWtcPathLeaveSec);
-displayLeaveMinUpdateLoop('path-to-33rd-leave-in-min', getPathTo33rdLeaveSec);
+displayLeaveMinUpdateLoop('ferry-to-brookfield-row', getBrookfieldFerryLeaveSec);
+displayLeaveMinUpdateLoop('path-to-wtc-row', getWtcPathLeaveSec);
+displayLeaveMinUpdateLoop('path-to-33rd-row', getPathTo33rdLeaveSec);
 addFullscreenButton();
