@@ -165,6 +165,12 @@ function addFullscreenButton() {
         button.style['display'] = 'none';
     };
 }
+
+// Used for demos.
+function getRandomLeaveSec(maxMin) {
+    return () => Promise.resolve(maxMin * 60 * Math.random());
+}
+
 displayLeaveMinUpdateLoop('ferry-to-brookfield-row', getBrookfieldFerryLeaveSec);
 displayLeaveMinUpdateLoop('path-to-wtc-row', getWtcPathLeaveSec);
 displayLeaveMinUpdateLoop('path-to-33rd-row', getPathTo33rdLeaveSec);
