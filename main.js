@@ -4,6 +4,9 @@ const walkTimeFromAptDoorToPathSec = 10 * 60;
 const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
 const maxLeaveSecToShowOption = 90 * 60;
 
+const METHOD_SCHEDULE = 'SCHEDULE';
+const METHOD_API = 'API';
+
 // Given a Luxon DateTime and a string like '8:30 AM', return a Luxon DateTime with the same date as
 // the input DateTime but with the time modified to be the time expressed by the string.
 function dateTimeWithModifiedTime(dateTime, timeStr) {
@@ -76,23 +79,25 @@ function getSecUntilNextDepartureFromWeekSchedule(date, schedule) {
 }
 
 function getLeaveSecFromSchedule(date, departureTimes, walkTimeSec) {
-    var queryDate = new Date(date * 1 + walkTimeSec * 1000);
-    return Promise.resolve(getSecUntilNextDeparture(queryDate, departureTimes));
+    let queryDate = new Date(date * 1 + walkTimeSec * 1000);
+    let leaveSec = getSecUntilNextDeparture(queryDate, departureTimes);
+    return Promise.resolve({leaveSec: leaveSec, method: METHOD_SCHEDULE});
 }
 
 function getLeaveSecFromWeekSchedule(date, weekSchedule, walkTimeSec) {
-    var queryDate = new Date(date * 1 + walkTimeSec * 1000);
-    return Promise.resolve(getSecUntilNextDepartureFromWeekSchedule(queryDate, weekSchedule));
+    let queryDate = new Date(date * 1 + walkTimeSec * 1000);
+    let leaveSec = getSecUntilNextDepartureFromWeekSchedule(queryDate, weekSchedule);
+    return Promise.resolve({leaveSec: leaveSec, method: METHOD_SCHEDULE});
 }
 
 const pathApiUrl = 'https://path.api.razza.dev/v1/stations/hoboken/realtime';
 
-// Get the number of seconds until all the upcoming PATH departures for a given route and direction.
+// Get the number of seconds until all the upcoming PATH departures for a given list of routes and a direction.
 //
-// The valid values for route and direction are defined at https://github.com/mrazza/path-data
+// The valid values for routes and direction are defined at https://github.com/mrazza/path-data
 //
 // Returns a Promise holding an array of Numbers.
-function getSecsUntilNextPathDeparturesFromApi(route, direction) {
+function getSecsUntilNextPathDeparturesFromApi(routes, direction) {
     return fetch(pathApiUrl).then(resp => {
         if (!resp.ok) {
             throw new Error(`HTTP error fetching PATH API URL: ${response.status}`);
@@ -101,7 +106,7 @@ function getSecsUntilNextPathDeparturesFromApi(route, direction) {
     }).then(dataArr => {
         var data = JSON.parse(new TextDecoder().decode(dataArr.value));
         var trains = data.upcomingTrains.filter(
-            train => train.route == route && train.direction == direction
+            train => routes.includes(train.route) && train.direction == direction
         );
         return trains.map(train => (Date.parse(train.projectedArrival) - new Date()) / 1000);
     });
@@ -109,23 +114,41 @@ function getSecsUntilNextPathDeparturesFromApi(route, direction) {
 
 // Returns a promise with the number of seconds until you must leave to catch the next PATH train,
 // using the API at https://path.api.razza.dev/
-function getPathLeaveSecFromApi(route, direction) {
-    return getSecsUntilNextPathDeparturesFromApi(route, direction).then(secs => {
+function getPathLeaveSecFromApi(routes, direction, walkTimeSec) {
+    return getSecsUntilNextPathDeparturesFromApi(routes, direction).then(secs => {
         for (const sec of secs) {
-            const leaveSec = sec - walkTimeFromAptDoorToPathSec;
+            const leaveSec = sec - walkTimeSec;
             if (leaveSec >= 0) {
-                return leaveSec;
+                return {leaveSec: leaveSec, method: METHOD_API};
+            } else {
+                console.log('Skipping PATH API option because not enough time until departure: ' + sec + ' seconds');
             }
         }
+        return {leaveSec: null, method: METHOD_API};
+    });
+}
+
+// This function uses the API and falls back to the schedule if the API is unavailable
+// (e.g. because there is no train far enough in the future, or the API is down).
+function getLeaveSecFromBothApiAndWeekSchedule(routes, direction, date, weekSchedule, walkTimeSec) {
+    let apiPromise = getPathLeaveSecFromApi(routes, direction, walkTimeSec);
+    let schedPromise = getLeaveSecFromWeekSchedule(date, weekSchedule, walkTimeSec);
+    return Promise.allSettled([apiPromise, schedPromise]).then(([apiResult, schedResult]) => {
+        if (apiResult.status == 'fulfilled' && apiResult.value.leaveSec != null) {
+            return Promise.resolve(apiResult.value);
+        } else if (apiResult.status != 'fulfilled') {
+            console.log('PATH API request failed: ' + JSON.stringify(apiResult));
+        }
+        return Promise.resolve(schedResult.value);
     });
 }
 
 function getPathTo33rdLeaveSec() {
-    return getLeaveSecFromWeekSchedule(new Date(), pathHobokenTo33rdWeekSchedule, walkTimeFromAptDoorToPathSec);
+    return getLeaveSecFromBothApiAndWeekSchedule(['HOB_33', 'JSQ_33_HOB'], 'TO_NY', new Date(), pathHobokenTo33rdWeekSchedule, walkTimeFromAptDoorToPathSec);
 }
 
 function getWtcPathLeaveSec() {
-    return getLeaveSecFromWeekSchedule(new Date(), pathHobokenToWtcWeekSchedule, walkTimeFromAptDoorToPathSec);
+    return getLeaveSecFromBothApiAndWeekSchedule(['HOB_WTC'], 'TO_NY', new Date(), pathHobokenToWtcWeekSchedule, walkTimeFromAptDoorToPathSec);
 }
 
 function getBrookfieldFerryLeaveSec() {
@@ -138,7 +161,7 @@ function getBrookfieldFerryLeaveSec() {
 // in the given div, then calls setTimeout to run the update again when the value changes.
 function displayLeaveMinUpdateLoop(rowId, leaveSecFunc) {
     const secPerMin = 60;  // Can set this to 1 to see the value update every second for testing.
-    leaveSecFunc().then(leaveSec => {
+    leaveSecFunc().then(({leaveSec, method}) => {
         let row = document.getElementById(rowId);
         if (leaveSec < maxLeaveSecToShowOption) {
             row.style.display = '';
