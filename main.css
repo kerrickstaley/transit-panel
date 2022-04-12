@@ -43,3 +43,10 @@
     content: "min";
     font-size: 10pt;
 }
+.spacer {
+    flex-grow: 1;
+}
+.method {
+    margin-top: 5px;
+    margin-right: 10px;
+}

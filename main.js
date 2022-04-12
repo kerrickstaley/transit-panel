@@ -155,6 +155,10 @@ function getBrookfieldFerryLeaveSec() {
     return getLeaveSecFromWeekSchedule(new Date(), hobokenToBrookfieldFerryWeekSchedule, walkTimeFromAptDoorToFerrySec);
 }
 
+function methodAbbrev(method) {
+    return method.substr(0, 3);
+}
+
 // Display remaining minutes before you need to leave in order to catch a given transit option.
 //
 // Runs the function to compute the remaining time (returned as a Promise), displays that value
@@ -171,6 +175,10 @@ function displayLeaveMinUpdateLoop(rowId, leaveSecFunc) {
         let leaveMin = Math.floor(leaveSec / secPerMin);
         // This is probably poor style.
         row.querySelector('.leave-in-min').innerHTML = leaveMin;
+        let methodDiv = row.querySelector('.method');
+        if (methodDiv !== null) {
+            methodDiv.innerHTML = methodAbbrev(method);
+        }
         // + .1 is a little hack to make sure that the minute has definitely rolled over by the time we get there.
         setTimeout(() => displayLeaveMinUpdateLoop(rowId, leaveSecFunc),
                    (((leaveSec % secPerMin) + secPerMin) % secPerMin + .1) * 1000);
