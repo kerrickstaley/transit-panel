@@ -98,6 +98,7 @@ const pathApiUrl = 'https://path.api.razza.dev/v1/stations/hoboken/realtime';
 //
 // Returns a Promise holding an array of Numbers.
 function getSecsUntilNextPathDeparturesFromApi(routes, direction) {
+    console.log('Querying mrazza API');
     return fetch(pathApiUrl).then(resp => {
         if (!resp.ok) {
             throw new Error(`HTTP error fetching PATH API URL: ${response.status}`);
@@ -179,9 +180,18 @@ function displayLeaveMinUpdateLoop(rowId, leaveSecFunc) {
         if (methodDiv !== null) {
             methodDiv.innerHTML = methodAbbrev(method);
         }
-        // + .1 is a little hack to make sure that the minute has definitely rolled over by the time we get there.
-        setTimeout(() => displayLeaveMinUpdateLoop(rowId, leaveSecFunc),
-                   (((leaveSec % secPerMin) + secPerMin) % secPerMin + .1) * 1000);
+        let sleepSec = ((leaveSec % secPerMin) + secPerMin) % secPerMin;
+        if (method == METHOD_SCHEDULE) {
+            // + .1 is a little hack to make sure that the minute has definitely rolled over by the time we get there.
+            sleepSec += .1;
+        } else if (method == METHOD_API) {
+            sleepSec = Math.min(30, sleepSec + 5);
+        } else {
+            console.log('unreachable');
+            return;
+        }
+        sleepSec = Math.max(10, sleepSec);  // Avoid hitting the API too much
+        setTimeout(() => displayLeaveMinUpdateLoop(rowId, leaveSecFunc), sleepSec * 1000);
     });
 }
 
