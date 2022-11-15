@@ -1,0 +1,4 @@
+# To prevent bundle.js changes from appearing in git diff output, run
+#   git config diff.nodiff.command /bin/true
+# See https://stackoverflow.com/a/10421385/785404 for deets
+bundle.js diff=nodiff
