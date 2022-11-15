@@ -4,6 +4,6 @@
     "luxon": "^3.1.0"
   },
   "scripts": {
-    "test": "jest"
+    "test": "TZ=America/New_York jest"
   }
 }
