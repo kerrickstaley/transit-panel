@@ -11,16 +11,27 @@ const stationsRoutes = require('./stationsRoutes');
 function getDepartures(json, station, route) {
     let consideredStation = {
         [stationsRoutes.HOBOKEN]: 'HOB',
+        [stationsRoutes.NEWPORT]: 'NEW',
     }[station];
     let label = {
         [stationsRoutes.PATH_HOB_TO_WTC]: 'ToNY',
+        [stationsRoutes.PATH_WTC_TO_HOB]: 'ToNJ',
         [stationsRoutes.PATH_HOB_TO_33RD]: 'ToNY',
+        [stationsRoutes.PATH_33RD_TO_HOB]: 'ToNJ',
+        [stationsRoutes.PATH_JSQ_TO_33RD]: 'ToNY',
+        [stationsRoutes.PATH_33RD_TO_JSQ]: 'ToNJ',
         [stationsRoutes.PATH_JSQ_TO_33RD_VIA_HOB]: 'ToNY',
+        [stationsRoutes.PATH_33RD_TO_JSQ_VIA_HOB]: 'ToNJ',
     }[route];
     let target = {
         [stationsRoutes.PATH_HOB_TO_WTC]: 'WTC',
+        [stationsRoutes.PATH_WTC_TO_HOB]: 'HOB',
         [stationsRoutes.PATH_HOB_TO_33RD]: '33S',
+        [stationsRoutes.PATH_33RD_TO_HOB]: 'HOB',
+        [stationsRoutes.PATH_JSQ_TO_33RD]: '33S',
+        [stationsRoutes.PATH_33RD_TO_JSQ]: 'JSQ',
         [stationsRoutes.PATH_JSQ_TO_33RD_VIA_HOB]: '33S',
+        [stationsRoutes.PATH_33RD_TO_JSQ_VIA_HOB]: 'JSQ',
     }[route];
 
     let stationsData = json.results.filter(elem => elem.consideredStation == consideredStation);
