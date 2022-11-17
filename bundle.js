@@ -2,6 +2,8 @@
 "use strict";
 
 const schedule = require('./schedule');
+const stationsRoutes = require('./stationsRoutes');
+const pathOfficial = require('./pathOfficial');
 
 const walkTimeFromAptDoorToPathSec = 10 * 60;
 const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
@@ -22,7 +24,7 @@ function getSecsUntilNextPathDeparturesFromMrazzaApi(routes, direction) {
     console.log('Querying mrazza API');
     return fetch(mrazzaPathApiUrl).then(resp => {
         if (!resp.ok) {
-            throw new Error(`HTTP error fetching PATH API URL: ${response.status}`);
+            throw new Error(`HTTP error fetching PATH API URL: ${resp.status}`);
         }
         return resp.body.getReader().read();
     }).then(dataArr => {
@@ -137,8 +139,11 @@ displayLeaveMinUpdateLoop('ferry-to-brookfield-row', getBrookfieldFerryLeaveSec)
 displayLeaveMinUpdateLoop('path-to-wtc-row', getWtcPathLeaveSec);
 displayLeaveMinUpdateLoop('path-to-33rd-row', getPathTo33rdLeaveSec);
 addFullscreenButton();
+pathOfficial.getDepartures([[stationsRoutes.HOBOKEN, stationsRoutes.PATH_JSQ_TO_33RD]]).then(data => {
+    console.log(data);
+});
 
-},{"./schedule":3}],2:[function(require,module,exports){
+},{"./pathOfficial":3,"./schedule":4,"./stationsRoutes":5}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -8766,6 +8771,89 @@ exports.Zone = Zone;
 
 
 },{}],3:[function(require,module,exports){
+const stationsRoutes = require('./stationsRoutes');
+
+// Note: The following two calls will always return the same result:
+//   getDeparturesFromJson(json, HOBOKEN, PATH_HOB_TO_33RD)
+// and
+//   getDeparturesFromJson(json, HOBOKEN, PATH_JSQ_TO_33RD_VIA_HOB)
+// This is because the "label" and "target" fields together aren't enough to distinguish these two
+// routes. In practice this doesn't matter because we will combine the information for the two
+// routes and display it in a single row on the tablet anyway. The "headSign" field does contain
+// information to distinguish these two but it seems to be human- rather than machine-readable.
+function getDeparturesFromJson(json, station, route) {
+    let consideredStation = {
+        [stationsRoutes.HOBOKEN]: 'HOB',
+        [stationsRoutes.NEWPORT]: 'NEW',
+    }[station];
+    let label = {
+        [stationsRoutes.PATH_HOB_TO_WTC]: 'ToNY',
+        [stationsRoutes.PATH_WTC_TO_HOB]: 'ToNJ',
+        [stationsRoutes.PATH_HOB_TO_33RD]: 'ToNY',
+        [stationsRoutes.PATH_33RD_TO_HOB]: 'ToNJ',
+        [stationsRoutes.PATH_JSQ_TO_33RD]: 'ToNY',
+        [stationsRoutes.PATH_33RD_TO_JSQ]: 'ToNJ',
+        [stationsRoutes.PATH_JSQ_TO_33RD_VIA_HOB]: 'ToNY',
+        [stationsRoutes.PATH_33RD_TO_JSQ_VIA_HOB]: 'ToNJ',
+    }[route];
+    let target = {
+        [stationsRoutes.PATH_HOB_TO_WTC]: 'WTC',
+        [stationsRoutes.PATH_WTC_TO_HOB]: 'HOB',
+        [stationsRoutes.PATH_HOB_TO_33RD]: '33S',
+        [stationsRoutes.PATH_33RD_TO_HOB]: 'HOB',
+        [stationsRoutes.PATH_JSQ_TO_33RD]: '33S',
+        [stationsRoutes.PATH_33RD_TO_JSQ]: 'JSQ',
+        [stationsRoutes.PATH_JSQ_TO_33RD_VIA_HOB]: '33S',
+        [stationsRoutes.PATH_33RD_TO_JSQ_VIA_HOB]: 'JSQ',
+    }[route];
+
+    let stationsData = json.results.filter(elem => elem.consideredStation == consideredStation);
+    if (stationsData.length == 0) {
+        throw new Error(`No matching stations`);
+    } else if (stationsData.length > 1) {
+        throw new Error(`Multiple matching stations: ${stationsData}`);
+    }
+    let stationData = stationsData[0];
+
+    let destinations = stationData.destinations.filter(elem => elem.label == label);
+    if (destinations.length == 0) {
+        throw new Error('No matching destinations');
+    } else if (destinations.length > 1) {
+        throw new Error(`Multiple matching destinations: ${destinations}`);
+    }
+    let destination = destinations[0];
+
+    let departures = destination.messages.filter(elem => elem.target == target).map(elem => parseInt(elem.secondsToArrival));
+
+    return departures;
+}
+
+function getPathApiUrl() {
+    return '/test_data/ridepath1.json';
+}
+
+function getDepartures(stations_routes) {
+    return fetch(getPathApiUrl()).then(resp => {
+        if (!resp.ok) {
+            throw new Error(`HTTP error fetching PATH API URL: ${resp.status}`);
+        }
+        return resp.body.getReader().read();
+    }).then(dataArr => {
+        var json = JSON.parse(new TextDecoder().decode(dataArr.value));
+        var ret = {};
+        for (let [station, route] of stations_routes) {
+            ret[station + '|' + route] = getDeparturesFromJson(json, station, route);
+        }
+        return ret;
+    });
+}
+
+module.exports = {
+    getDeparturesFromJson: getDeparturesFromJson,
+    getDepartures: getDepartures,
+};
+
+},{"./stationsRoutes":5}],4:[function(require,module,exports){
 "use strict";
 
 const luxon = require('luxon');
@@ -8862,4 +8950,28 @@ module.exports = {
     'getLeaveSecFromWeekSchedule': getLeaveSecFromWeekSchedule,
 };
 
-},{"luxon":2}]},{},[1]);
+},{"luxon":2}],5:[function(require,module,exports){
+// stations
+const HOBOKEN = 'HOBOKEN';
+const NEWPORT = 'NEWPORT';
+
+// routes
+const PATH_HOB_TO_WTC = 'PATH_HOB_TO_WTC';
+const PATH_HOB_TO_33RD = 'PATH_HOB_TO_33RD';
+const PATH_JSQ_TO_33RD_VIA_HOB = 'PATH_JSQ_TO_33RD_VIA_HOB';
+const PATH_JSQ_TO_33RD = 'PATH_JSQ_TO_33RD';
+const PATH_WTC_TO_HOB = 'PATH_WTC_TO_HOB';
+const PATH_33RD_TO_JSQ = 'PATH_33RD_TO_JSQ';
+
+module.exports = {
+    HOBOKEN: HOBOKEN,
+    NEWPORT: NEWPORT,
+    PATH_HOB_TO_WTC: PATH_HOB_TO_WTC,
+    PATH_HOB_TO_33RD: PATH_HOB_TO_33RD,
+    PATH_JSQ_TO_33RD_VIA_HOB: PATH_JSQ_TO_33RD_VIA_HOB,
+    PATH_JSQ_TO_33RD: PATH_JSQ_TO_33RD,
+    PATH_WTC_TO_HOB: PATH_WTC_TO_HOB,
+    PATH_33RD_TO_JSQ: PATH_33RD_TO_JSQ,
+};
+
+},{}]},{},[1]);

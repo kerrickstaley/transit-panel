@@ -1,14 +1,14 @@
 const stationsRoutes = require('./stationsRoutes');
 
 // Note: The following two calls will always return the same result:
-//   getDepartures(json, HOBOKEN, PATH_HOB_TO_33RD)
+//   getDeparturesFromJson(json, HOBOKEN, PATH_HOB_TO_33RD)
 // and
-//   getDepartures(json, HOBOKEN, PATH_JSQ_TO_33RD_VIA_HOB)
+//   getDeparturesFromJson(json, HOBOKEN, PATH_JSQ_TO_33RD_VIA_HOB)
 // This is because the "label" and "target" fields together aren't enough to distinguish these two
 // routes. In practice this doesn't matter because we will combine the information for the two
 // routes and display it in a single row on the tablet anyway. The "headSign" field does contain
 // information to distinguish these two but it seems to be human- rather than machine-readable.
-function getDepartures(json, station, route) {
+function getDeparturesFromJson(json, station, route) {
     let consideredStation = {
         [stationsRoutes.HOBOKEN]: 'HOB',
         [stationsRoutes.NEWPORT]: 'NEW',
@@ -35,8 +35,10 @@ function getDepartures(json, station, route) {
     }[route];
 
     let stationsData = json.results.filter(elem => elem.consideredStation == consideredStation);
-    if (stationsData.length != 1) {
-        throw new Error(`Not exactly one matching station: ${stationsData}`);
+    if (stationsData.length == 0) {
+        throw new Error(`No matching stations`);
+    } else if (stationsData.length > 1) {
+        throw new Error(`Multiple matching stations: ${stationsData}`);
     }
     let stationData = stationsData[0];
 
@@ -44,7 +46,7 @@ function getDepartures(json, station, route) {
     if (destinations.length == 0) {
         throw new Error('No matching destinations');
     } else if (destinations.length > 1) {
-        throw new Error(`Multiple matching destination: ${destinations}`);
+        throw new Error(`Multiple matching destinations: ${destinations}`);
     }
     let destination = destinations[0];
 
@@ -53,6 +55,27 @@ function getDepartures(json, station, route) {
     return departures;
 }
 
+function getPathApiUrl() {
+    return '/test_data/ridepath1.json';
+}
+
+function getDepartures(stations_routes) {
+    return fetch(getPathApiUrl()).then(resp => {
+        if (!resp.ok) {
+            throw new Error(`HTTP error fetching PATH API URL: ${resp.status}`);
+        }
+        return resp.body.getReader().read();
+    }).then(dataArr => {
+        var json = JSON.parse(new TextDecoder().decode(dataArr.value));
+        var ret = {};
+        for (let [station, route] of stations_routes) {
+            ret[station + '|' + route] = getDeparturesFromJson(json, station, route);
+        }
+        return ret;
+    });
+}
+
 module.exports = {
-    'getDepartures': getDepartures,
+    getDeparturesFromJson: getDeparturesFromJson,
+    getDepartures: getDepartures,
 };
