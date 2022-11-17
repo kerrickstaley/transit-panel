@@ -5,4 +5,4 @@ cd "$(git rev-parse --show-toplevel)"
 ( cd .git/hooks && ln -s ../../git/pre-commit.sh pre-commit )
 # Configure Git to ignore bundle.js changes in output of git diff
 # See https://stackoverflow.com/a/10421385/785404
-git config diff.nodiff.command /bin/true
+git config diff.nodiff.command /usr/bin/true
