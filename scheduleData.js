@@ -1,5 +1,7 @@
 "use strict";
 
+const ids = require('./ids');
+
 // https://www.nywaterway.com/HobokenNJTT-WFCRoute.aspx#weekday
 const hobokenToBrookfieldFerryWeekdayDepartureTimes = [
     '6:05 AM',
@@ -481,8 +483,16 @@ const pathHobokenTo33rdWeekSchedule = [
     pathHobokenTo33rdSundaySchedule,
 ];
 
+const idsToWeekSchedule = {
+    [ids.HOBOKEN]: {
+        [ids.WTC]: pathHobokenToWtcWeekSchedule,
+        [ids._33RD_ST]: pathHobokenTo33rdWeekSchedule,
+    }
+};
+
 module.exports = {
     hobokenToBrookfieldFerryWeekSchedule: hobokenToBrookfieldFerryWeekSchedule,
     pathHobokenToWtcWeekSchedule: pathHobokenToWtcWeekSchedule,
     pathHobokenTo33rdWeekSchedule: pathHobokenTo33rdWeekSchedule,
+    idsToWeekSchedule: idsToWeekSchedule,
 };

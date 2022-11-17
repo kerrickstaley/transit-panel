@@ -7,6 +7,9 @@ const WTC = 'WTC';
 const JOURNAL_SQUARE = 'JOURNAL_SQUARE';
 const NEWARK = 'NEWARK';
 
+// methods
+const SCHEDULE = 'SCHEDULE';
+
 module.exports = {
     HOBOKEN: HOBOKEN,
     NEWPORT: NEWPORT,
@@ -14,6 +17,7 @@ module.exports = {
     WTC: WTC,
     JOURNAL_SQUARE: JOURNAL_SQUARE,
     NEWARK: NEWARK,
+    SCHEDULE: SCHEDULE,
 };
 
 },{}],2:[function(require,module,exports){
@@ -8788,6 +8792,8 @@ exports.Zone = Zone;
 "use strict";
 
 const luxon = require('luxon');
+const scheduleData = require('./scheduleData');
+const ids = require('./ids');
 
 // TODO remove this redundant defintion, this is terrible
 const METHOD_SCHEDULE = 'SCHEDULE';
@@ -8845,7 +8851,7 @@ function getSecUntilNextDeparture(date, departureTimes) {
 // format that getSecUntilNextDeparture expects).
 //
 // The return value is the number of seconds until the first departure time that is not before `date`.
-function getSecsUntilNextDeparturesFromWeekSchedule(date, schedule, n = 1) {
+function getSecsUntilNextDeparturesFromWeekSchedule(date, schedule, n) {
     var DateTime = luxon.DateTime;
     var Duration = luxon.Duration;
     const dateTime = DateTime.fromJSDate(date);
@@ -8875,25 +8881,43 @@ function getLeaveSecFromSchedule(date, departureTimes, walkTimeSec) {
 
 function getLeaveSecFromWeekSchedule(date, weekSchedule, walkTimeSec) {
     let queryDate = new Date(date * 1 + walkTimeSec * 1000);
-    let leaveSec = getSecsUntilNextDeparturesFromWeekSchedule(queryDate, weekSchedule)[0];
+    let leaveSec = getSecsUntilNextDeparturesFromWeekSchedule(queryDate, weekSchedule, 1)[0];
     return Promise.resolve({leaveSec: leaveSec, method: METHOD_SCHEDULE});
 }
 
-function getDepartures(stationsRoutes) {
+function getDeparturesFromTime(stationsRoutes, now, n) {
     let ret = [];
     for (let [station, route] of stationsRoutes) {
-
+        let schedule = scheduleData.idsToWeekSchedule[station][route];
+        let departures = getSecsUntilNextDeparturesFromWeekSchedule(now, schedule, n);
+        ret.push({
+            station: station,
+            route: route,
+            departures: departures,
+            method: ids.SCHEDULE,
+        });
     }
+    return ret;
 }
 
+// TODO: Can we directly test this API? Seems like there's no way to get the value out of a
+// Promise that we know is resolved.
+function getDepartures(stationsRoutes, now = null) {
+    if (now === null) {
+        now = new Date();
+    }
+    return Promise.resolve(getDeparturesFromTime(now, stationsRoutes, 3));
+}
 
 module.exports = {
     'getSecsUntilNextDeparturesFromWeekSchedule': getSecsUntilNextDeparturesFromWeekSchedule,
     'getSecUntilDepartures': getSecUntilDepartures,
     'getLeaveSecFromWeekSchedule': getLeaveSecFromWeekSchedule,
+    'getDeparturesFromTime': getDeparturesFromTime,
+    'getDepartures': getDepartures,
 };
 
-},{"luxon":3}],5:[function(require,module,exports){
+},{"./ids":1,"./scheduleData":5,"luxon":3}],5:[function(require,module,exports){
 "use strict";
 
 const ids = require('./ids');

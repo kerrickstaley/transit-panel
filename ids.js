@@ -6,6 +6,9 @@ const WTC = 'WTC';
 const JOURNAL_SQUARE = 'JOURNAL_SQUARE';
 const NEWARK = 'NEWARK';
 
+// methods
+const SCHEDULE = 'SCHEDULE';
+
 module.exports = {
     HOBOKEN: HOBOKEN,
     NEWPORT: NEWPORT,
@@ -13,4 +16,5 @@ module.exports = {
     WTC: WTC,
     JOURNAL_SQUARE: JOURNAL_SQUARE,
     NEWARK: NEWARK,
+    SCHEDULE: SCHEDULE,
 };
