@@ -8773,6 +8773,11 @@ exports.Zone = Zone;
 },{}],3:[function(require,module,exports){
 const stationsRoutes = require('./stationsRoutes');
 
+// This fetches from the "official" PATH API at https://www.panynj.gov/bin/portauthority/ridepath.json
+// "Official" in scare quotes because this API is not actually official supported and can't
+// actually be accessed from a web app due to CORS. Instead, I plan to host a proxy on my Raspberry
+// Pi that mirrors the data from the official API.
+
 // Note: The following two calls will always return the same result:
 //   getDeparturesFromJson(json, HOBOKEN, PATH_HOB_TO_33RD)
 // and
