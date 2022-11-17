@@ -1,4 +1,4 @@
-const stationsRoutes = require('./stationsRoutes');
+const ids = require('./ids');
 
 // This fetches from the "official" PATH API at https://www.panynj.gov/bin/portauthority/ridepath.json
 // "Official" in scare quotes because this API is not actually official supported and can't
@@ -15,28 +15,28 @@ const stationsRoutes = require('./stationsRoutes');
 // information to distinguish these two but it seems to be human- rather than machine-readable.
 function getDeparturesFromJson(json, station, route) {
     let consideredStation = {
-        [stationsRoutes.HOBOKEN]: 'HOB',
-        [stationsRoutes.NEWPORT]: 'NEW',
+        [ids.HOBOKEN]: 'HOB',
+        [ids.NEWPORT]: 'NEW',
     }[station];
     let label = {
-        [stationsRoutes.PATH_HOB_TO_WTC]: 'ToNY',
-        [stationsRoutes.PATH_WTC_TO_HOB]: 'ToNJ',
-        [stationsRoutes.PATH_HOB_TO_33RD]: 'ToNY',
-        [stationsRoutes.PATH_33RD_TO_HOB]: 'ToNJ',
-        [stationsRoutes.PATH_JSQ_TO_33RD]: 'ToNY',
-        [stationsRoutes.PATH_33RD_TO_JSQ]: 'ToNJ',
-        [stationsRoutes.PATH_JSQ_TO_33RD_VIA_HOB]: 'ToNY',
-        [stationsRoutes.PATH_33RD_TO_JSQ_VIA_HOB]: 'ToNJ',
+        [ids.PATH_HOB_TO_WTC]: 'ToNY',
+        [ids.PATH_WTC_TO_HOB]: 'ToNJ',
+        [ids.PATH_HOB_TO_33RD]: 'ToNY',
+        [ids.PATH_33RD_TO_HOB]: 'ToNJ',
+        [ids.PATH_JSQ_TO_33RD]: 'ToNY',
+        [ids.PATH_33RD_TO_JSQ]: 'ToNJ',
+        [ids.PATH_JSQ_TO_33RD_VIA_HOB]: 'ToNY',
+        [ids.PATH_33RD_TO_JSQ_VIA_HOB]: 'ToNJ',
     }[route];
     let target = {
-        [stationsRoutes.PATH_HOB_TO_WTC]: 'WTC',
-        [stationsRoutes.PATH_WTC_TO_HOB]: 'HOB',
-        [stationsRoutes.PATH_HOB_TO_33RD]: '33S',
-        [stationsRoutes.PATH_33RD_TO_HOB]: 'HOB',
-        [stationsRoutes.PATH_JSQ_TO_33RD]: '33S',
-        [stationsRoutes.PATH_33RD_TO_JSQ]: 'JSQ',
-        [stationsRoutes.PATH_JSQ_TO_33RD_VIA_HOB]: '33S',
-        [stationsRoutes.PATH_33RD_TO_JSQ_VIA_HOB]: 'JSQ',
+        [ids.PATH_HOB_TO_WTC]: 'WTC',
+        [ids.PATH_WTC_TO_HOB]: 'HOB',
+        [ids.PATH_HOB_TO_33RD]: '33S',
+        [ids.PATH_33RD_TO_HOB]: 'HOB',
+        [ids.PATH_JSQ_TO_33RD]: '33S',
+        [ids.PATH_33RD_TO_JSQ]: 'JSQ',
+        [ids.PATH_JSQ_TO_33RD_VIA_HOB]: '33S',
+        [ids.PATH_33RD_TO_JSQ_VIA_HOB]: 'JSQ',
     }[route];
 
     let stationsData = json.results.filter(elem => elem.consideredStation == consideredStation);
