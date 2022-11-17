@@ -8,6 +8,7 @@ const NEWARK = 'NEWARK';
 
 // methods
 const SCHEDULE = 'SCHEDULE';
+const API = 'API';
 
 module.exports = {
     HOBOKEN: HOBOKEN,
@@ -17,4 +18,5 @@ module.exports = {
     JOURNAL_SQUARE: JOURNAL_SQUARE,
     NEWARK: NEWARK,
     SCHEDULE: SCHEDULE,
+    API: API,
 };

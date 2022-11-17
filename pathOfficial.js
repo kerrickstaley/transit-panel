@@ -41,10 +41,14 @@ function getDeparturesFromJson(json, station, route) {
 }
 
 function getPathApiUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('pathApi')) {
+        return urlParams.get('pathApi');
+    }
     return '/test_data/ridepath1.json';
 }
 
-function getDepartures(stations_routes) {
+function getDepartures(stationsRoutes) {
     return fetch(getPathApiUrl()).then(resp => {
         if (!resp.ok) {
             throw new Error(`HTTP error fetching PATH API URL: ${resp.status}`);
@@ -52,9 +56,14 @@ function getDepartures(stations_routes) {
         return resp.body.getReader().read();
     }).then(dataArr => {
         var json = JSON.parse(new TextDecoder().decode(dataArr.value));
-        var ret = {};
-        for (let [station, route] of stations_routes) {
-            ret[station + '|' + route] = getDeparturesFromJson(json, station, route);
+        var ret = [];
+        for (let [station, route] of stationsRoutes) {
+            ret.push({
+                station: station,
+                route: route,
+                departures: getDeparturesFromJson(json, station, route),
+                method: ids.API,
+            });
         }
         return ret;
     });

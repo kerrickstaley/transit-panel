@@ -2,6 +2,11 @@
 
 const schedule = require('./schedule');
 const scheduleData = require('./scheduleData');
+const pathOfficial = require('./pathOfficial');
+const ids = require('./ids');
+
+// TODO remove testing code
+pathOfficial.getDepartures([[ids.HOBOKEN, ids._33RD_ST]]).then(console.log);
 
 const walkTimeFromAptDoorToPathSec = 10 * 60;
 const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
