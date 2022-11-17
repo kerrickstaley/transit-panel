@@ -480,3 +480,9 @@ const pathHobokenTo33rdWeekSchedule = [
     pathHobokenTo33rdSaturdaySchedule,
     pathHobokenTo33rdSundaySchedule,
 ];
+
+module.exports = {
+    hobokenToBrookfieldFerryWeekSchedule: hobokenToBrookfieldFerryWeekSchedule,
+    pathHobokenToWtcWeekSchedule: pathHobokenToWtcWeekSchedule,
+    pathHobokenTo33rdWeekSchedule: pathHobokenTo33rdWeekSchedule,
+};

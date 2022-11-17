@@ -1,6 +1,7 @@
 "use strict";
 
 const schedule = require('./schedule');
+const scheduleData = require('./scheduleData');
 
 const walkTimeFromAptDoorToPathSec = 10 * 60;
 const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
@@ -21,7 +22,7 @@ function getSecsUntilNextPathDeparturesFromMrazzaApi(routes, direction) {
     console.log('Querying mrazza API');
     return fetch(mrazzaPathApiUrl).then(resp => {
         if (!resp.ok) {
-            throw new Error(`HTTP error fetching PATH API URL: ${response.status}`);
+            throw new Error(`HTTP error fetching PATH API URL: ${resp.status}`);
         }
         return resp.body.getReader().read();
     }).then(dataArr => {
@@ -65,15 +66,15 @@ function getLeaveSecFromBothApiAndWeekSchedule(routes, direction, date, weekSche
 }
 
 function getPathTo33rdLeaveSec() {
-    return getLeaveSecFromBothApiAndWeekSchedule(['HOB_33', 'JSQ_33_HOB'], 'TO_NY', new Date(), pathHobokenTo33rdWeekSchedule, walkTimeFromAptDoorToPathSec);
+    return getLeaveSecFromBothApiAndWeekSchedule(['HOB_33', 'JSQ_33_HOB'], 'TO_NY', new Date(), scheduleData.pathHobokenTo33rdWeekSchedule, walkTimeFromAptDoorToPathSec);
 }
 
 function getWtcPathLeaveSec() {
-    return getLeaveSecFromBothApiAndWeekSchedule(['HOB_WTC'], 'TO_NY', new Date(), pathHobokenToWtcWeekSchedule, walkTimeFromAptDoorToPathSec);
+    return getLeaveSecFromBothApiAndWeekSchedule(['HOB_WTC'], 'TO_NY', new Date(), scheduleData.pathHobokenToWtcWeekSchedule, walkTimeFromAptDoorToPathSec);
 }
 
 function getBrookfieldFerryLeaveSec() {
-    return schedule.getLeaveSecFromWeekSchedule(new Date(), hobokenToBrookfieldFerryWeekSchedule, walkTimeFromAptDoorToFerrySec);
+    return schedule.getLeaveSecFromWeekSchedule(new Date(), scheduleData.hobokenToBrookfieldFerryWeekSchedule, walkTimeFromAptDoorToFerrySec);
 }
 
 function methodAbbrev(method) {
