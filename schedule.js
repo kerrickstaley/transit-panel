@@ -58,22 +58,26 @@ function getSecUntilNextDeparture(date, departureTimes) {
 // format that getSecUntilNextDeparture expects).
 //
 // The return value is the number of seconds until the first departure time that is not before `date`.
-function getSecUntilNextDepartureFromWeekSchedule(date, schedule) {
+function getSecsUntilNextDeparturesFromWeekSchedule(date, schedule, n = 1) {
     var DateTime = luxon.DateTime;
     var Duration = luxon.Duration;
     const dateTime = DateTime.fromJSDate(date);
+    let ret = [];
     for (let dayDelta = 0; dayDelta < 8; dayDelta += 1) {
         const futureDateTime = dateTime.plus(Duration.fromObject({days: dayDelta}));
         const daySchedule = schedule[futureDateTime.weekday - 1];
         for (const timeAmPm of daySchedule) {
             const departure = dateTimeWithModifiedTime(futureDateTime, timeAmPm);
             if (departure >= dateTime) {
-                return (departure - dateTime) / 1000;
+                ret.push((departure - dateTime) / 1000);
+                if (ret.length >= n) {
+                    return ret;
+                }
             }
         }
     }
-    console.log('There were no future departures in the entire week schedule');
-    return Number.NaN;
+    console.log('There were not enough future departures in the entire week schedule');
+    return ret;
 }
 
 function getLeaveSecFromSchedule(date, departureTimes, walkTimeSec) {
@@ -84,12 +88,12 @@ function getLeaveSecFromSchedule(date, departureTimes, walkTimeSec) {
 
 function getLeaveSecFromWeekSchedule(date, weekSchedule, walkTimeSec) {
     let queryDate = new Date(date * 1 + walkTimeSec * 1000);
-    let leaveSec = getSecUntilNextDepartureFromWeekSchedule(queryDate, weekSchedule);
+    let leaveSec = getSecsUntilNextDeparturesFromWeekSchedule(queryDate, weekSchedule)[0];
     return Promise.resolve({leaveSec: leaveSec, method: METHOD_SCHEDULE});
 }
 
 module.exports = {
-    'getSecUntilNextDepartureFromWeekSchedule': getSecUntilNextDepartureFromWeekSchedule,
+    'getSecsUntilNextDeparturesFromWeekSchedule': getSecsUntilNextDeparturesFromWeekSchedule,
     'getSecUntilDepartures': getSecUntilDepartures,
     'getLeaveSecFromWeekSchedule': getLeaveSecFromWeekSchedule,
 };

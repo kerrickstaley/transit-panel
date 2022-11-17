@@ -1,4 +1,22 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+// stations
+const HOBOKEN = 'HOBOKEN';
+const NEWPORT = 'NEWPORT';
+const _33RD_ST = '_33RD_ST';
+const WTC = 'WTC';
+const JOURNAL_SQUARE = 'JOURNAL_SQUARE';
+const NEWARK = 'NEWARK';
+
+module.exports = {
+    HOBOKEN: HOBOKEN,
+    NEWPORT: NEWPORT,
+    _33RD_ST: _33RD_ST,
+    WTC: WTC,
+    JOURNAL_SQUARE: JOURNAL_SQUARE,
+    NEWARK: NEWARK,
+};
+
+},{}],2:[function(require,module,exports){
 "use strict";
 
 const schedule = require('./schedule');
@@ -139,7 +157,7 @@ displayLeaveMinUpdateLoop('path-to-wtc-row', getWtcPathLeaveSec);
 displayLeaveMinUpdateLoop('path-to-33rd-row', getPathTo33rdLeaveSec);
 addFullscreenButton();
 
-},{"./schedule":3,"./scheduleData":4}],2:[function(require,module,exports){
+},{"./schedule":4,"./scheduleData":5}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -8766,7 +8784,7 @@ exports.VERSION = VERSION;
 exports.Zone = Zone;
 
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 "use strict";
 
 const luxon = require('luxon');
@@ -8827,22 +8845,26 @@ function getSecUntilNextDeparture(date, departureTimes) {
 // format that getSecUntilNextDeparture expects).
 //
 // The return value is the number of seconds until the first departure time that is not before `date`.
-function getSecUntilNextDepartureFromWeekSchedule(date, schedule) {
+function getSecsUntilNextDeparturesFromWeekSchedule(date, schedule, n = 1) {
     var DateTime = luxon.DateTime;
     var Duration = luxon.Duration;
     const dateTime = DateTime.fromJSDate(date);
+    let ret = [];
     for (let dayDelta = 0; dayDelta < 8; dayDelta += 1) {
         const futureDateTime = dateTime.plus(Duration.fromObject({days: dayDelta}));
         const daySchedule = schedule[futureDateTime.weekday - 1];
         for (const timeAmPm of daySchedule) {
             const departure = dateTimeWithModifiedTime(futureDateTime, timeAmPm);
             if (departure >= dateTime) {
-                return (departure - dateTime) / 1000;
+                ret.push((departure - dateTime) / 1000);
+                if (ret.length >= n) {
+                    return ret;
+                }
             }
         }
     }
-    console.log('There were no future departures in the entire week schedule');
-    return Number.NaN;
+    console.log('There were not enough future departures in the entire week schedule');
+    return ret;
 }
 
 function getLeaveSecFromSchedule(date, departureTimes, walkTimeSec) {
@@ -8853,18 +8875,28 @@ function getLeaveSecFromSchedule(date, departureTimes, walkTimeSec) {
 
 function getLeaveSecFromWeekSchedule(date, weekSchedule, walkTimeSec) {
     let queryDate = new Date(date * 1 + walkTimeSec * 1000);
-    let leaveSec = getSecUntilNextDepartureFromWeekSchedule(queryDate, weekSchedule);
+    let leaveSec = getSecsUntilNextDeparturesFromWeekSchedule(queryDate, weekSchedule)[0];
     return Promise.resolve({leaveSec: leaveSec, method: METHOD_SCHEDULE});
 }
 
+function getDepartures(stationsRoutes) {
+    let ret = [];
+    for (let [station, route] of stationsRoutes) {
+
+    }
+}
+
+
 module.exports = {
-    'getSecUntilNextDepartureFromWeekSchedule': getSecUntilNextDepartureFromWeekSchedule,
+    'getSecsUntilNextDeparturesFromWeekSchedule': getSecsUntilNextDeparturesFromWeekSchedule,
     'getSecUntilDepartures': getSecUntilDepartures,
     'getLeaveSecFromWeekSchedule': getLeaveSecFromWeekSchedule,
 };
 
-},{"luxon":2}],4:[function(require,module,exports){
+},{"luxon":3}],5:[function(require,module,exports){
 "use strict";
+
+const ids = require('./ids');
 
 // https://www.nywaterway.com/HobokenNJTT-WFCRoute.aspx#weekday
 const hobokenToBrookfieldFerryWeekdayDepartureTimes = [
@@ -9347,10 +9379,18 @@ const pathHobokenTo33rdWeekSchedule = [
     pathHobokenTo33rdSundaySchedule,
 ];
 
+const idsToWeekSchedule = {
+    [ids.HOBOKEN]: {
+        [ids.WTC]: pathHobokenToWtcWeekSchedule,
+        [ids._33RD_ST]: pathHobokenTo33rdWeekSchedule,
+    }
+};
+
 module.exports = {
     hobokenToBrookfieldFerryWeekSchedule: hobokenToBrookfieldFerryWeekSchedule,
     pathHobokenToWtcWeekSchedule: pathHobokenToWtcWeekSchedule,
     pathHobokenTo33rdWeekSchedule: pathHobokenTo33rdWeekSchedule,
+    idsToWeekSchedule: idsToWeekSchedule,
 };
 
-},{}]},{},[1]);
+},{"./ids":1}]},{},[2]);

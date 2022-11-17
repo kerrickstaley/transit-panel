@@ -21,7 +21,8 @@ const stationToApiId = {
 // This simplification makes it slightly tricky to figure out how to get to Hoboken when you're on
 // the JOURNAL_SQUARE <-> 33RD_ST line, because sometimes this line goes to Hoboken and sometimes it
 // bypasses Hoboken. I mostly don't care about this case though and think that users will be able to
-// figure it out.
+// figure it out. They can disambiguate between "JSQ <-> 33S skipping HOB" and "JSQ <-> 33S via HOB"
+// based on which other lines are running.
 function getDeparturesFromJson(json, station, route) {
     let consideredStation = stationToApiId[station];
     let target = stationToApiId[route];
