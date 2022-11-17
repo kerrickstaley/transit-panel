@@ -5,39 +5,26 @@ const ids = require('./ids');
 // actually be accessed from a web app due to CORS. Instead, I plan to host a proxy on my Raspberry
 // Pi that mirrors the data from the official API.
 
-// Note: The following two calls will always return the same result:
-//   getDeparturesFromJson(json, HOBOKEN, PATH_HOB_TO_33RD)
-// and
-//   getDeparturesFromJson(json, HOBOKEN, PATH_JSQ_TO_33RD_VIA_HOB)
-// This is because the "label" and "target" fields together aren't enough to distinguish these two
-// routes. In practice this doesn't matter because we will combine the information for the two
-// routes and display it in a single row on the tablet anyway. The "headSign" field does contain
-// information to distinguish these two but it seems to be human- rather than machine-readable.
+const stationToApiId = {
+    [ids.HOBOKEN]: 'HOB',
+    [ids.NEWPORT]: 'NEW',
+    [ids.WTC]: 'WTC',
+    [ids._33RD_ST]: '33S',
+    [ids.JOURNAL_SQUARE]: 'JSQ',
+    [ids.NEWARK]: 'NWK',
+};
+
+// Note: For PATH, we use the destination station as the "route" ID. This is mostly good enough:
+// From a given station there may be (at most) 2 different routes going to a given destination, but
+// only one of them is operating at a given time, and in the UI we want to show the data for
+// whichever one is operating.
+// This simplification makes it slightly tricky to figure out how to get to Hoboken when you're on
+// the JOURNAL_SQUARE <-> 33RD_ST line, because sometimes this line goes to Hoboken and sometimes it
+// bypasses Hoboken. I mostly don't care about this case though and think that users will be able to
+// figure it out.
 function getDeparturesFromJson(json, station, route) {
-    let consideredStation = {
-        [ids.HOBOKEN]: 'HOB',
-        [ids.NEWPORT]: 'NEW',
-    }[station];
-    let label = {
-        [ids.PATH_HOB_TO_WTC]: 'ToNY',
-        [ids.PATH_WTC_TO_HOB]: 'ToNJ',
-        [ids.PATH_HOB_TO_33RD]: 'ToNY',
-        [ids.PATH_33RD_TO_HOB]: 'ToNJ',
-        [ids.PATH_JSQ_TO_33RD]: 'ToNY',
-        [ids.PATH_33RD_TO_JSQ]: 'ToNJ',
-        [ids.PATH_JSQ_TO_33RD_VIA_HOB]: 'ToNY',
-        [ids.PATH_33RD_TO_JSQ_VIA_HOB]: 'ToNJ',
-    }[route];
-    let target = {
-        [ids.PATH_HOB_TO_WTC]: 'WTC',
-        [ids.PATH_WTC_TO_HOB]: 'HOB',
-        [ids.PATH_HOB_TO_33RD]: '33S',
-        [ids.PATH_33RD_TO_HOB]: 'HOB',
-        [ids.PATH_JSQ_TO_33RD]: '33S',
-        [ids.PATH_33RD_TO_JSQ]: 'JSQ',
-        [ids.PATH_JSQ_TO_33RD_VIA_HOB]: '33S',
-        [ids.PATH_33RD_TO_JSQ_VIA_HOB]: 'JSQ',
-    }[route];
+    let consideredStation = stationToApiId[station];
+    let target = stationToApiId[route];
 
     let stationsData = json.results.filter(elem => elem.consideredStation == consideredStation);
     if (stationsData.length == 0) {
@@ -47,17 +34,9 @@ function getDeparturesFromJson(json, station, route) {
     }
     let stationData = stationsData[0];
 
-    let destinations = stationData.destinations.filter(elem => elem.label == label);
-    if (destinations.length == 0) {
-        throw new Error('No matching destinations');
-    } else if (destinations.length > 1) {
-        throw new Error(`Multiple matching destinations: ${destinations}`);
-    }
-    let destination = destinations[0];
+    let messages = stationData.destinations.map(elem => elem.messages).flat();
 
-    let departures = destination.messages.filter(elem => elem.target == target).map(elem => parseInt(elem.secondsToArrival));
-
-    return departures;
+    return messages.filter(elem => elem.target == target).map(elem => parseInt(elem.secondsToArrival));
 }
 
 function getPathApiUrl() {
