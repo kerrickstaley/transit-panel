@@ -71,6 +71,10 @@ function getLeaveSec(station, route, walkSec, getDeparturesFuncs) {
     let promises = getDeparturesFuncs.map(f => f(station, route));
     return Promise.allSettled(promises).then(allDepartures => {
         let leaveSecs = allDepartures.flatMap(result => {
+            if (result.status != 'fulfilled') {
+                console.log('Promise broken: ' + JSON.stringify(result));
+                return [];
+            }
             let leaveSecs = result.value.departures.flatMap(d => {
                 let leaveSec = d - walkSec;
                 return leaveSec >= 0 ? [leaveSec] : [];
@@ -80,9 +84,6 @@ function getLeaveSec(station, route, walkSec, getDeparturesFuncs) {
         return leaveSecs.length >= 1 ? leaveSecs[0] : null;
     });
 }
-
-// TODO remove testing code
-getLeaveSec(ids.HOBOKEN, ids._33RD_ST, walkTimeFromAptDoorToPathSec, [pathOfficial.getDepartures, schedule.getDepartures]).then(console.log);
 
 function getPathTo33rdLeaveSec() {
     return getLeaveSec(ids.HOBOKEN, ids._33RD_ST, walkTimeFromAptDoorToPathSec, [pathOfficial.getDepartures, schedule.getDepartures]);
