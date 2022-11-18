@@ -111,11 +111,15 @@ function getDeparturesFromTime(stationsRoutes, now, n) {
 
 // TODO: Can we directly test this API? Seems like there's no way to get the value out of a
 // Promise that we know is resolved.
-function getDepartures(stationsRoutes, now = null) {
+function getDeparturesOld(stationsRoutes, now = null) {
     if (now === null) {
         now = new Date();
     }
-    return Promise.resolve(getDeparturesFromTime(now, stationsRoutes, 3));
+    return Promise.resolve(getDeparturesFromTime(stationsRoutes, now, 3));
+}
+
+function getDepartures(station, route) {
+    return getDeparturesOld([[station, route]]).then(result => result[0].departures);
 }
 
 module.exports = {

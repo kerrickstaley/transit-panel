@@ -5,9 +5,6 @@ const scheduleData = require('./scheduleData');
 const pathOfficial = require('./pathOfficial');
 const ids = require('./ids');
 
-// TODO remove testing code
-pathOfficial.getDepartures([[ids.HOBOKEN, ids._33RD_ST]]).then(console.log);
-
 const walkTimeFromAptDoorToPathSec = 10 * 60;
 const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
 const maxLeaveSecToShowOption = 90 * 60;
@@ -69,6 +66,20 @@ function getLeaveSecFromBothApiAndWeekSchedule(routes, direction, date, weekSche
         return Promise.resolve(schedResult.value);
     });
 }
+
+function getLeaveSec(station, route, walkSec, getDeparturesFuncs) {
+    let promises = getDeparturesFuncs.map(f => f(station, route));
+    return Promise.allSettled(promises).then(departures => {
+        let leaveSecs = departures.map(ds => ds.value).flat().flatMap(d => {
+            let leaveSec = d - walkSec;
+            return leaveSec >= 0 ? [leaveSec] : [];
+        });
+        return leaveSecs.length >= 1 ? leaveSecs[0] : null;
+    });
+}
+
+// TODO remove testing code
+getLeaveSec(ids.HOBOKEN, ids._33RD_ST, walkTimeFromAptDoorToPathSec, [pathOfficial.getDepartures, schedule.getDepartures]).then(console.log);
 
 function getPathTo33rdLeaveSec() {
     return getLeaveSecFromBothApiAndWeekSchedule(['HOB_33', 'JSQ_33_HOB'], 'TO_NY', new Date(), scheduleData.pathHobokenTo33rdWeekSchedule, walkTimeFromAptDoorToPathSec);

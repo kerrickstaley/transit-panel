@@ -45,17 +45,16 @@ function getPathApiUrl() {
     if (urlParams.has('pathApi')) {
         return urlParams.get('pathApi');
     }
-    return '/test_data/ridepath1.json';
+    return 'http://127.0.0.1:5000';
 }
 
-function getDepartures(stationsRoutes) {
+function getDeparturesOld(stationsRoutes) {
     return fetch(getPathApiUrl()).then(resp => {
         if (!resp.ok) {
             throw new Error(`HTTP error fetching PATH API URL: ${resp.status}`);
         }
-        return resp.body.getReader().read();
-    }).then(dataArr => {
-        var json = JSON.parse(new TextDecoder().decode(dataArr.value));
+        return resp.json();
+    }).then(json => {
         var ret = [];
         for (let [station, route] of stationsRoutes) {
             ret.push({
@@ -67,6 +66,10 @@ function getDepartures(stationsRoutes) {
         }
         return ret;
     });
+}
+
+function getDepartures(station, route) {
+    return getDeparturesOld([[station, route]]).then(result => result[0].departures);
 }
 
 module.exports = {
