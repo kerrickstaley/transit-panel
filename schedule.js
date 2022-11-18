@@ -119,7 +119,12 @@ function getDeparturesOld(stationsRoutes, now = null) {
 }
 
 function getDepartures(station, route) {
-    return getDeparturesOld([[station, route]]).then(result => result[0].departures);
+    return getDeparturesOld([[station, route]]).then(result => {
+        return {
+            departures: result[0].departures,
+            method: ids.SCHEDULE,
+        };
+    });
 }
 
 module.exports = {

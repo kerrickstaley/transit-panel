@@ -69,10 +69,13 @@ function getLeaveSecFromBothApiAndWeekSchedule(routes, direction, date, weekSche
 
 function getLeaveSec(station, route, walkSec, getDeparturesFuncs) {
     let promises = getDeparturesFuncs.map(f => f(station, route));
-    return Promise.allSettled(promises).then(departures => {
-        let leaveSecs = departures.map(ds => ds.value).flat().flatMap(d => {
-            let leaveSec = d - walkSec;
-            return leaveSec >= 0 ? [leaveSec] : [];
+    return Promise.allSettled(promises).then(allDepartures => {
+        let leaveSecs = allDepartures.flatMap(result => {
+            let leaveSecs = result.value.departures.flatMap(d => {
+                let leaveSec = d - walkSec;
+                return leaveSec >= 0 ? [leaveSec] : [];
+            });
+            return leaveSecs.length >= 1 ? [{leaveSec: leaveSecs[0], method: result.value.method}] : [];
         });
         return leaveSecs.length >= 1 ? leaveSecs[0] : null;
     });
@@ -82,11 +85,11 @@ function getLeaveSec(station, route, walkSec, getDeparturesFuncs) {
 getLeaveSec(ids.HOBOKEN, ids._33RD_ST, walkTimeFromAptDoorToPathSec, [pathOfficial.getDepartures, schedule.getDepartures]).then(console.log);
 
 function getPathTo33rdLeaveSec() {
-    return getLeaveSecFromBothApiAndWeekSchedule(['HOB_33', 'JSQ_33_HOB'], 'TO_NY', new Date(), scheduleData.pathHobokenTo33rdWeekSchedule, walkTimeFromAptDoorToPathSec);
+    return getLeaveSec(ids.HOBOKEN, ids._33RD_ST, walkTimeFromAptDoorToPathSec, [pathOfficial.getDepartures, schedule.getDepartures]);
 }
 
 function getWtcPathLeaveSec() {
-    return getLeaveSecFromBothApiAndWeekSchedule(['HOB_WTC'], 'TO_NY', new Date(), scheduleData.pathHobokenToWtcWeekSchedule, walkTimeFromAptDoorToPathSec);
+    return getLeaveSec(ids.HOBOKEN, ids.WTC, walkTimeFromAptDoorToPathSec, [pathOfficial.getDepartures, schedule.getDepartures]);
 }
 
 function getBrookfieldFerryLeaveSec() {
