@@ -8843,7 +8843,7 @@ function getPathApiUrl() {
     if (urlParams.has('pathApi')) {
         return urlParams.get('pathApi');
     }
-    return '/test_data/ridepath1.json';
+    return 'http://127.0.0.1:5000';
 }
 
 function getDepartures(stationsRoutes) {
@@ -8851,9 +8851,8 @@ function getDepartures(stationsRoutes) {
         if (!resp.ok) {
             throw new Error(`HTTP error fetching PATH API URL: ${resp.status}`);
         }
-        return resp.body.getReader().read();
-    }).then(dataArr => {
-        var json = JSON.parse(new TextDecoder().decode(dataArr.value));
+        return resp.json();
+    }).then(json => {
         var ret = [];
         for (let [station, route] of stationsRoutes) {
             ret.push({
