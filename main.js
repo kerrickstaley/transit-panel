@@ -12,61 +12,6 @@ const maxLeaveSecToShowOption = 90 * 60;
 const METHOD_SCHEDULE = 'SCHEDULE';
 const METHOD_API = 'API';
 
-
-const mrazzaPathApiUrl = 'https://path.api.razza.dev/v1/stations/hoboken/realtime';
-
-// Get the number of seconds until all the upcoming PATH departures for a given list of routes and a direction.
-//
-// The valid values for routes and direction are defined at https://github.com/mrazza/path-data
-//
-// Returns a Promise holding an array of Numbers.
-function getSecsUntilNextPathDeparturesFromMrazzaApi(routes, direction) {
-    console.log('Querying mrazza API');
-    return fetch(mrazzaPathApiUrl).then(resp => {
-        if (!resp.ok) {
-            throw new Error(`HTTP error fetching PATH API URL: ${resp.status}`);
-        }
-        return resp.body.getReader().read();
-    }).then(dataArr => {
-        var data = JSON.parse(new TextDecoder().decode(dataArr.value));
-        var trains = data.upcomingTrains.filter(
-            train => routes.includes(train.route) && train.direction == direction
-        );
-        return trains.map(train => (Date.parse(train.projectedArrival) - new Date()) / 1000);
-    });
-}
-
-// Returns a promise with the number of seconds until you must leave to catch the next PATH train,
-// using the API at https://path.api.razza.dev/
-function getPathLeaveSecFromMrazzaApi(routes, direction, walkTimeSec) {
-    return getSecsUntilNextPathDeparturesFromMrazzaApi(routes, direction).then(secs => {
-        for (const sec of secs) {
-            const leaveSec = sec - walkTimeSec;
-            if (leaveSec >= 0) {
-                return {leaveSec: leaveSec, method: METHOD_API};
-            } else {
-                console.log('Skipping PATH API option because not enough time until departure: ' + sec + ' seconds');
-            }
-        }
-        return {leaveSec: null, method: METHOD_API};
-    });
-}
-
-// This function uses the API and falls back to the schedule if the API is unavailable
-// (e.g. because there is no train far enough in the future, or the API is down).
-function getLeaveSecFromBothApiAndWeekSchedule(routes, direction, date, weekSchedule, walkTimeSec) {
-    let apiPromise = getPathLeaveSecFromMrazzaApi(routes, direction, walkTimeSec);
-    let schedPromise = schedule.getLeaveSecFromWeekSchedule(date, weekSchedule, walkTimeSec);
-    return Promise.allSettled([apiPromise, schedPromise]).then(([apiResult, schedResult]) => {
-        if (apiResult.status == 'fulfilled' && apiResult.value.leaveSec != null) {
-            return Promise.resolve(apiResult.value);
-        } else if (apiResult.status != 'fulfilled') {
-            console.log('PATH API request failed: ' + JSON.stringify(apiResult));
-        }
-        return Promise.resolve(schedResult.value);
-    });
-}
-
 function getLeaveSec(station, route, walkSec, getDeparturesFuncs) {
     let promises = getDeparturesFuncs.map(f => f(station, route));
     return Promise.allSettled(promises).then(allDepartures => {
