@@ -18,7 +18,7 @@ class Observation(typing.NamedTuple):
 
     @property
     def sec_to_arrival(self):
-        return (self.projected_arrival - self.fetch_time).seconds
+        return (self.projected_arrival - self.fetch_time).total_seconds()
 
     @property
     def min_to_arrival(self):
@@ -90,14 +90,15 @@ def get_departures_mrazza():
     for train in j['upcomingTrains']:
         projected_arrival = parser.parse(train['projectedArrival'])
         last_updated = parser.parse(train['lastUpdated'])
-        ret.append(Observation(
+        obs = Observation(
             api='MRAZZA',
             fetch_time=fetch_time,
             station='HOB',
             head_sign=train['headsign'],
             projected_arrival=projected_arrival,
             last_updated=last_updated,
-        ))
+        )
+        ret.append(obs)
 
     return sorted(ret)
 
@@ -117,14 +118,15 @@ def get_departures_official():
         for msg in dest['messages']:
             last_updated = parser.parse(msg['lastUpdated'])
             projected_arrival = last_updated + datetime.timedelta(seconds=int(msg['secondsToArrival']))
-            ret.append(Observation(
+            obs = Observation(
                 api='OFFICAL',
                 fetch_time=fetch_time,
                 station='HOB',
                 head_sign=msg['headSign'],
                 projected_arrival=projected_arrival,
                 last_updated=last_updated,
-            ))
+            )
+            ret.append(obs)
 
     return sorted(ret)
 
