@@ -2,9 +2,79 @@
 import datetime
 from dateutil import parser
 import requests
+import typing
 
 MRAZZA_URL = 'http://localhost:51051/v1/stations/hoboken/realtime'
 OFFICIAL_URL = 'https://www.panynj.gov/bin/portauthority/ridepath.json'
+
+
+class Observation(typing.NamedTuple):
+    api: str
+    fetch_time: datetime.datetime
+    station: str
+    head_sign: str
+    projected_arrival: datetime.datetime
+    last_updated: datetime.datetime
+
+    @property
+    def sec_to_arrival(self):
+        return (self.projected_arrival - self.fetch_time).seconds
+
+    @property
+    def min_to_arrival(self):
+        return self.sec_to_arrival / 60
+
+    @staticmethod
+    def _lt_helper(a, b):
+        if a.fetch_time < b.fetch_time:
+            return True
+
+        if a.head_sign < b.head_sign:
+            return True
+
+        if a.sec_to_arrival < b.sec_to_arrival:
+            return True
+
+    def __lt__(self, other):
+        if self.fetch_time < other.fetch_time:
+            return True
+        if self.fetch_time > other.fetch_time:
+            return False
+
+        if self.head_sign < other.head_sign:
+            return True
+        if self.head_sign > other.head_sign:
+            return False
+
+        if self.sec_to_arrival < other.sec_to_arrival:
+            return True
+        if self.sec_to_arrival > other.sec_to_arrival:
+            return False
+
+        return typing.NamedTuple.__lt__(self, other)
+
+    def __eq__(self, other):
+        return not (self < other or other < self)
+
+    def __gt__(self, other):
+        return other < self
+
+    def __le__(self, other):
+        return self < other or self == other
+
+    def __ge__(self, other):
+        return self > other or self == other
+
+    def __ne__(self, other):
+        return not (self == other)
+
+    def short_repr(self):
+        return f'{self.head_sign} - {self.min_to_arrival:5.2f}'
+
+
+def short_repr(obj):
+    return '[' + ', '.join([d.short_repr() for d in obj]) + ']'
+
 
 def get_departures_mrazza():
     # For some reason like 1/2 the requests I send locally to the API hang :(
@@ -15,12 +85,19 @@ def get_departures_mrazza():
         except requests.exceptions.ReadTimeout:
             pass
 
+    fetch_time = datetime.datetime.now(datetime.timezone.utc)  # :(
     ret = []
     for train in j['upcomingTrains']:
-        arrival = parser.parse(train['projectedArrival'])
-        now = datetime.datetime.now(datetime.timezone.utc)  # :(
-        delta = arrival - now
-        ret.append((train['headsign'], round(delta.seconds / 60, 2)))
+        projected_arrival = parser.parse(train['projectedArrival'])
+        last_updated = parser.parse(train['lastUpdated'])
+        ret.append(Observation(
+            api='MRAZZA',
+            fetch_time=fetch_time,
+            station='HOB',
+            head_sign=train['headsign'],
+            projected_arrival=projected_arrival,
+            last_updated=last_updated,
+        ))
 
     return sorted(ret)
 
@@ -34,14 +111,25 @@ def get_departures_official():
     else:
         raise Exception('Did not find Hoboken')
 
+    fetch_time = datetime.datetime.now(datetime.timezone.utc)  # :(
     ret = []
     for dest in hob['destinations']:
         for msg in dest['messages']:
-            print(msg['lastUpdated'])
-            ret.append((msg['headSign'], round(int(msg['secondsToArrival']) / 60, 2)))
+            last_updated = parser.parse(msg['lastUpdated'])
+            projected_arrival = last_updated + datetime.timedelta(seconds=int(msg['secondsToArrival']))
+            ret.append(Observation(
+                api='OFFICAL',
+                fetch_time=fetch_time,
+                station='HOB',
+                head_sign=msg['headSign'],
+                projected_arrival=projected_arrival,
+                last_updated=last_updated,
+            ))
+
     return sorted(ret)
 
-print('mrazza:')
-print(get_departures_mrazza())
-print('official:')
-print(get_departures_official())
+
+print('mrazza:   ', end='')
+print(', '.join([d.short_repr() for d in get_departures_mrazza()]))
+print('official: ', end='')
+print(', '.join([d.short_repr() for d in get_departures_official()]))
