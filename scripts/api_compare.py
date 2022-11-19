@@ -3,9 +3,11 @@ import datetime
 from dateutil import parser
 import requests
 import typing
+import pytz
 
 MRAZZA_URL = 'http://localhost:51051/v1/stations/hoboken/realtime'
 OFFICIAL_URL = 'https://www.panynj.gov/bin/portauthority/ridepath.json'
+TZ = pytz.timezone('America/New_York')
 
 
 class Observation(typing.NamedTuple):
@@ -85,7 +87,7 @@ def get_departures_mrazza():
         except requests.exceptions.ReadTimeout:
             pass
 
-    fetch_time = datetime.datetime.now(datetime.timezone.utc)  # :(
+    fetch_time = datetime.datetime.now(TZ)
     ret = []
     for train in j['upcomingTrains']:
         projected_arrival = parser.parse(train['projectedArrival'])
@@ -95,8 +97,8 @@ def get_departures_mrazza():
             fetch_time=fetch_time,
             station='HOB',
             head_sign=train['headsign'],
-            projected_arrival=projected_arrival,
-            last_updated=last_updated,
+            projected_arrival=projected_arrival.astimezone(TZ),
+            last_updated=last_updated.astimezone(TZ),
         )
         ret.append(obs)
 
@@ -112,7 +114,7 @@ def get_departures_official():
     else:
         raise Exception('Did not find Hoboken')
 
-    fetch_time = datetime.datetime.now(datetime.timezone.utc)  # :(
+    fetch_time = datetime.datetime.now(TZ)
     ret = []
     for dest in hob['destinations']:
         for msg in dest['messages']:
@@ -123,8 +125,8 @@ def get_departures_official():
                 fetch_time=fetch_time,
                 station='HOB',
                 head_sign=msg['headSign'],
-                projected_arrival=projected_arrival,
-                last_updated=last_updated,
+                projected_arrival=projected_arrival.astimezone(TZ),
+                last_updated=last_updated.astimezone(TZ),
             )
             ret.append(obs)
 
