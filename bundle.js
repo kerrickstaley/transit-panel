@@ -8812,6 +8812,7 @@ exports.Zone = Zone;
 
 },{}],4:[function(require,module,exports){
 const ids = require('./ids');
+const luxon = require('luxon');
 
 // This fetches from the "official" PATH API at https://www.panynj.gov/bin/portauthority/ridepath.json
 // "Official" in scare quotes because this API is not actually official supported and can't
@@ -8836,7 +8837,7 @@ const stationToApiId = {
 // bypasses Hoboken. I mostly don't care about this case though and think that users will be able to
 // figure it out. They can disambiguate between "JSQ <-> 33S skipping HOB" and "JSQ <-> 33S via HOB"
 // based on which other lines are running.
-function getDeparturesFromJson(json, station, route) {
+function getDeparturesFromJson(json, station, route, now = null) {
     let consideredStation = stationToApiId[station];
     let target = stationToApiId[route];
 
@@ -8850,7 +8851,13 @@ function getDeparturesFromJson(json, station, route) {
 
     let messages = stationData.destinations.map(elem => elem.messages).flat();
 
-    return messages.filter(elem => elem.target == target).map(elem => parseInt(elem.secondsToArrival));
+    var now = luxon.DateTime.fromJSDate(now === null ? new Date() : now);
+    return messages.filter(elem => elem.target == target).map(elem => {
+        let secondsToArrival = parseInt(elem.secondsToArrival);
+        let lastUpdated = luxon.DateTime.fromISO(elem.lastUpdated);
+        let stalenessSec = now.diff(lastUpdated).as('seconds');
+        return secondsToArrival - stalenessSec;
+    });
 }
 
 function getPathApiUrl() {
@@ -8895,7 +8902,7 @@ module.exports = {
     getDepartures: getDepartures,
 };
 
-},{"./ids":1}],5:[function(require,module,exports){
+},{"./ids":1,"luxon":3}],5:[function(require,module,exports){
 "use strict";
 
 const luxon = require('luxon');
