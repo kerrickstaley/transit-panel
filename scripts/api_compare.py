@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 import datetime
-from dateutil import parser
+import dateutil.parser
 import requests
 import typing
 import pytz
+import argparse
 
 MRAZZA_URL = 'http://localhost:51051/v1/stations/hoboken/realtime'
 OFFICIAL_URL = 'https://www.panynj.gov/bin/portauthority/ridepath.json'
 TZ = pytz.timezone('America/New_York')
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--csvfile', help='CSV file to write output to')
 
 class Observation(typing.NamedTuple):
     api: str
@@ -73,6 +76,16 @@ class Observation(typing.NamedTuple):
     def short_repr(self):
         return f'{self.head_sign} - {self.min_to_arrival:5.2f}'
 
+    def csv_line(self):
+        return ','.join([
+            self.api,
+            self.fetch_time.isoformat(),
+            self.station,
+            self.head_sign,
+            self.projected_arrival.isoformat(),
+            self.last_updated.isoformat(),
+        ])
+
 
 def short_repr(obj):
     return '[' + ', '.join([d.short_repr() for d in obj]) + ']'
@@ -90,8 +103,8 @@ def get_departures_mrazza():
     fetch_time = datetime.datetime.now(TZ)
     ret = []
     for train in j['upcomingTrains']:
-        projected_arrival = parser.parse(train['projectedArrival'])
-        last_updated = parser.parse(train['lastUpdated'])
+        projected_arrival = dateutil.parser.parse(train['projectedArrival'])
+        last_updated = dateutil.parser.parse(train['lastUpdated'])
         obs = Observation(
             api='MRAZZA',
             fetch_time=fetch_time,
@@ -118,7 +131,7 @@ def get_departures_official():
     ret = []
     for dest in hob['destinations']:
         for msg in dest['messages']:
-            last_updated = parser.parse(msg['lastUpdated'])
+            last_updated = dateutil.parser.parse(msg['lastUpdated'])
             projected_arrival = last_updated + datetime.timedelta(seconds=int(msg['secondsToArrival']))
             obs = Observation(
                 api='OFFICAL',
@@ -133,7 +146,17 @@ def get_departures_official():
     return sorted(ret)
 
 
-print('mrazza:   ', end='')
-print(', '.join([d.short_repr() for d in get_departures_mrazza()]))
-print('official: ', end='')
-print(', '.join([d.short_repr() for d in get_departures_official()]))
+def main(args):
+    mrazza = get_departures_mrazza()
+    official = get_departures_official()
+    print('mrazza:  ', short_repr(mrazza))
+    print('official:', short_repr(official))
+
+    if args.csvfile is not None:
+        with open(args.csvfile, 'a') as f:
+            for d in mrazza + official:
+                print(d.csv_line(), file=f)
+
+
+if __name__ == '__main__':
+    main(parser.parse_args())
