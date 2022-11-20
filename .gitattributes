@@ -2,3 +2,4 @@
 #   git config diff.nodiff.command /bin/true
 # See https://stackoverflow.com/a/10421385/785404 for deets
 bundle.js diff=nodiff
+scheduleData.json diff=nodiff
