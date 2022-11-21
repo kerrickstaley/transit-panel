@@ -134,7 +134,7 @@ def get_departures_official():
             last_updated = dateutil.parser.parse(msg['lastUpdated'])
             projected_arrival = last_updated + datetime.timedelta(seconds=int(msg['secondsToArrival']))
             obs = Observation(
-                api='OFFICAL',
+                api='OFFICIAL',
                 fetch_time=fetch_time,
                 station='HOB',
                 head_sign=msg['headSign'],
