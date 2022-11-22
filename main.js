@@ -42,6 +42,7 @@ function getLeaveSecFerry(station, route, walkSec) {
 function getLeaveSec(station, route, walkSec) {
     let method = {
         [ids.HOBOKEN]: getLeaveSecPath,
+        [ids.WTC]: getLeaveSecPath,
         [ids.HOBOKEN_FERRY]: getLeaveSecFerry,
     }[station];
     return method(station, route, walkSec);
@@ -115,7 +116,15 @@ function getRandomLeaveSec(maxMin) {
     return () => Promise.resolve(maxMin * 60 * Math.random());
 }
 
-config.home.stations.forEach(station => station.routes.forEach(route =>
+function getConfigName() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('config')) {
+        return urlParams.get('config');
+    }
+    return 'home';
+}
+
+config[getConfigName()].stations.forEach(station => station.routes.forEach(route =>
     displayLeaveMinUpdateLoop(route.htmlId, () =>
         getLeaveSec(station.name, route.name, station.walkTimeSec))));
 

@@ -24,6 +24,16 @@ const pathHobokenToWtcWeekSchedule = [
     data.pathHobokenToWtc.sunday,
 ];
 
+const pathWtcToHobokenWeekSchedule = [
+    data.pathWtcToHoboken.weekday,
+    data.pathWtcToHoboken.weekday,
+    data.pathWtcToHoboken.weekday,
+    data.pathWtcToHoboken.weekday,
+    data.pathWtcToHoboken.weekday,
+    data.pathWtcToHoboken.saturday,
+    data.pathWtcToHoboken.sunday,
+];
+
 const pathHobokenTo33rdWeekSchedule = [
     data.pathHobokenTo33rd.weekday,
     data.pathHobokenTo33rd.weekday,
@@ -38,6 +48,9 @@ const idsToWeekSchedule = {
     [ids.HOBOKEN]: {
         [ids.WTC]: pathHobokenToWtcWeekSchedule,
         [ids._33RD_ST]: pathHobokenTo33rdWeekSchedule,
+    },
+    [ids.WTC]: {
+        [ids.HOBOKEN]: pathWtcToHobokenWeekSchedule,
     },
     [ids.HOBOKEN_FERRY]: {
         [ids.HOBOKEN_TO_BROOKFIELD_FERRY]: hobokenToBrookfieldFerryWeekSchedule,

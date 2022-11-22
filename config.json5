@@ -27,4 +27,19 @@
       }
     ],
   },
+  work: {
+    stations: [
+      {
+        name: "WTC",
+        // TODO need to measure actual walk time
+        walkTimeSec: 600,
+        routes: [
+          {
+            name: "HOBOKEN",
+            htmlId: "path-to-wtc-row",
+          },
+        ],
+      },
+    ],
+  },
 }
