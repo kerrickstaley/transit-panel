@@ -12,7 +12,7 @@ const maxLeaveSecToShowOption = 90 * 60;
 const METHOD_SCHEDULE = 'SCHEDULE';
 const METHOD_API = 'API';
 
-function getLeaveSec(station, route, walkSec, getDeparturesFuncs) {
+function getLeaveSecGeneric(station, route, walkSec, getDeparturesFuncs) {
     let promises = getDeparturesFuncs.map(f => f(station, route));
     return Promise.allSettled(promises).then(allDepartures => {
         let leaveSecs = allDepartures.flatMap(result => {
@@ -30,16 +30,32 @@ function getLeaveSec(station, route, walkSec, getDeparturesFuncs) {
     });
 }
 
+function getLeaveSecPath(station, route, walkSec) {
+    return getLeaveSecGeneric(station, route, walkSec, [pathOfficial.getDepartures, schedule.getDepartures]);
+}
+
+function getLeaveSecFerry(station, route, walkSec) {
+    return getLeaveSecGeneric(station, route, walkSec, [schedule.getDepartures]);
+}
+
+function getLeaveSec(station, route, walkSec) {
+    let method = {
+        [ids.HOBOKEN]: getLeaveSecPath,
+        [ids.HOBOKEN_FERRY]: getLeaveSecFerry,
+    }[station];
+    return method(station, route, walkSec);
+}
+
 function getPathTo33rdLeaveSec() {
-    return getLeaveSec(ids.HOBOKEN, ids._33RD_ST, walkTimeFromAptDoorToPathSec, [pathOfficial.getDepartures, schedule.getDepartures]);
+    return getLeaveSec(ids.HOBOKEN, ids._33RD_ST, walkTimeFromAptDoorToPathSec);
 }
 
 function getWtcPathLeaveSec() {
-    return getLeaveSec(ids.HOBOKEN, ids.WTC, walkTimeFromAptDoorToPathSec, [pathOfficial.getDepartures, schedule.getDepartures]);
+    return getLeaveSec(ids.HOBOKEN, ids.WTC, walkTimeFromAptDoorToPathSec);
 }
 
 function getBrookfieldFerryLeaveSec() {
-    return schedule.getLeaveSecFromWeekSchedule(new Date(), scheduleData.hobokenToBrookfieldFerryWeekSchedule, walkTimeFromAptDoorToFerrySec);
+    return getLeaveSec(ids.HOBOKEN_FERRY, ids.HOBOKEN_TO_BROOKFIELD_FERRY, walkTimeFromAptDoorToFerrySec);
 }
 
 function methodAbbrev(method) {

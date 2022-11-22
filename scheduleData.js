@@ -38,7 +38,10 @@ const idsToWeekSchedule = {
     [ids.HOBOKEN]: {
         [ids.WTC]: pathHobokenToWtcWeekSchedule,
         [ids._33RD_ST]: pathHobokenTo33rdWeekSchedule,
-    }
+    },
+    [ids.HOBOKEN_FERRY]: {
+        [ids.HOBOKEN_TO_BROOKFIELD_FERRY]: hobokenToBrookfieldFerryWeekSchedule,
+    },
 };
 
 module.exports = {
