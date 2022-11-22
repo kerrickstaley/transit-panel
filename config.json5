@@ -1,0 +1,30 @@
+{
+  home: {
+    stations: [
+      {
+        name: "HOBOKEN",
+        walkTimeSec: 600,
+        routes: [
+          {
+            name: "WTC",
+            htmlId: "path-to-wtc-row",
+          },
+          {
+            name: "_33RD_ST",
+            htmlId: "path-to-33rd-row",
+          },
+        ],
+      },
+      {
+        name: "HOBOKEN_FERRY",
+        walkTimeSec: 600,
+        routes: [
+          {
+            name: "HOBOKEN_TO_BROOKFIELD_FERRY",
+            htmlId: "ferry-to-brookfield-row",
+          },
+        ],
+      }
+    ],
+  },
+}

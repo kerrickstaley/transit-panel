@@ -1,5 +1,6 @@
 "use strict";
 
+const config = require('./config.json');
 const schedule = require('./schedule');
 const scheduleData = require('./scheduleData');
 const pathOfficial = require('./pathOfficial');
@@ -114,7 +115,8 @@ function getRandomLeaveSec(maxMin) {
     return () => Promise.resolve(maxMin * 60 * Math.random());
 }
 
-displayLeaveMinUpdateLoop('ferry-to-brookfield-row', getBrookfieldFerryLeaveSec);
-displayLeaveMinUpdateLoop('path-to-wtc-row', getWtcPathLeaveSec);
-displayLeaveMinUpdateLoop('path-to-33rd-row', getPathTo33rdLeaveSec);
+config.home.stations.forEach(station => station.routes.forEach(route =>
+    displayLeaveMinUpdateLoop(route.htmlId, () =>
+        getLeaveSec(station.name, route.name, station.walkTimeSec))));
+
 addFullscreenButton();
