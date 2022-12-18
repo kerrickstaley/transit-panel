@@ -52,7 +52,7 @@ function getPathApiUrl() {
     if (urlParams.has('pathApi')) {
         return urlParams.get('pathApi');
     }
-    return 'http://127.0.0.1:5000';
+    return `https://api.allorigins.win/raw?url=${encodeURIComponent('https://www.panynj.gov/bin/portauthority/ridepath.json')}`;
 }
 
 function getDeparturesOld(stationsRoutes) {
