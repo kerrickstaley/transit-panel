@@ -48,9 +48,12 @@ function getDeparturesFromJson(json, route, now) {
 
 function getDepartures(station, route) {
     let now = new Date();
-    return fetch(stationUrl(station)).then(resp => {
-        return getDeparturesFromJson(resp.json(), route, now);
-    });
+    return fetch(stationUrl(station))
+        .then(resp => resp.json())
+        .then(json => ({
+            departures: getDeparturesFromJson(json, route, now),
+            method: ids.API,
+        }));
 }
 
 module.exports = {

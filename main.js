@@ -2,8 +2,8 @@
 
 const config = require('./config.json');
 const schedule = require('./schedule');
-const scheduleData = require('./scheduleData');
 const pathOfficial = require('./pathOfficial');
+const mrazza = require('./mrazza');
 const ids = require('./ids');
 
 const walkTimeFromAptDoorToPathSec = 10 * 60;
@@ -32,7 +32,7 @@ function getLeaveSecGeneric(station, route, walkSec, getDeparturesFuncs) {
 }
 
 function getLeaveSecPath(station, route, walkSec) {
-    return getLeaveSecGeneric(station, route, walkSec, [pathOfficial.getDepartures, schedule.getDepartures]);
+    return getLeaveSecGeneric(station, route, walkSec, [mrazza.getDepartures, schedule.getDepartures]);
 }
 
 function getLeaveSecFerry(station, route, walkSec) {
