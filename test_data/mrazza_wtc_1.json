@@ -1,0 +1,69 @@
+{
+ "upcomingTrains": [
+  {
+   "lineName": "Hoboken",
+   "headsign": "Hoboken",
+   "route": "HOB_WTC",
+   "routeDisplayName": "World Trade Center - Hoboken",
+   "direction": "TO_NJ",
+   "lineColors": [
+    "#65C100"
+   ],
+   "status": "ON_TIME",
+   "projectedArrival": "2022-12-19T23:51:00Z",
+   "lastUpdated": "2022-12-19T23:46:39Z"
+  },
+  {
+   "lineName": "Hoboken",
+   "headsign": "Hoboken",
+   "route": "HOB_WTC",
+   "routeDisplayName": "World Trade Center - Hoboken",
+   "direction": "TO_NJ",
+   "lineColors": [
+    "#65C100"
+   ],
+   "status": "ON_TIME",
+   "projectedArrival": "2022-12-20T00:03:00Z",
+   "lastUpdated": "2022-12-19T23:46:39Z"
+  },
+  {
+   "lineName": "Newark",
+   "headsign": "Newark",
+   "route": "NWK_WTC",
+   "routeDisplayName": "World Trade Center - Newark",
+   "direction": "TO_NJ",
+   "lineColors": [
+    "#D93A30"
+   ],
+   "status": "ON_TIME",
+   "projectedArrival": "2022-12-19T23:48:00Z",
+   "lastUpdated": "2022-12-19T23:46:39Z"
+  },
+  {
+   "lineName": "Newark",
+   "headsign": "Newark",
+   "route": "NWK_WTC",
+   "routeDisplayName": "World Trade Center - Newark",
+   "direction": "TO_NJ",
+   "lineColors": [
+    "#D93A30"
+   ],
+   "status": "ON_TIME",
+   "projectedArrival": "2022-12-19T23:53:00Z",
+   "lastUpdated": "2022-12-19T23:46:39Z"
+  },
+  {
+   "lineName": "Newark",
+   "headsign": "Newark",
+   "route": "NWK_WTC",
+   "routeDisplayName": "World Trade Center - Newark",
+   "direction": "TO_NJ",
+   "lineColors": [
+    "#D93A30"
+   ],
+   "status": "ON_TIME",
+   "projectedArrival": "2022-12-19T23:58:00Z",
+   "lastUpdated": "2022-12-19T23:46:39Z"
+  }
+ ]
+}

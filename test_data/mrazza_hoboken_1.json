@@ -1,0 +1,56 @@
+{
+ "upcomingTrains": [
+  {
+   "lineName": "33rd Street",
+   "headsign": "33rd Street",
+   "route": "HOB_33",
+   "routeDisplayName": "Hoboken - 33rd Street",
+   "direction": "TO_NY",
+   "lineColors": [
+    "#4D92FB"
+   ],
+   "status": "ON_TIME",
+   "projectedArrival": "2022-12-19T13:55:00Z",
+   "lastUpdated": "2022-12-19T13:51:24Z"
+  },
+  {
+   "lineName": "33rd Street",
+   "headsign": "33rd Street",
+   "route": "HOB_33",
+   "routeDisplayName": "Hoboken - 33rd Street",
+   "direction": "TO_NY",
+   "lineColors": [
+    "#4D92FB"
+   ],
+   "status": "ON_TIME",
+   "projectedArrival": "2022-12-19T14:02:00Z",
+   "lastUpdated": "2022-12-19T13:51:24Z"
+  },
+  {
+   "lineName": "World Trade Center",
+   "headsign": "World Trade Center",
+   "route": "HOB_WTC",
+   "routeDisplayName": "Hoboken - World Trade Center",
+   "direction": "TO_NY",
+   "lineColors": [
+    "#65C100"
+   ],
+   "status": "ON_TIME",
+   "projectedArrival": "2022-12-19T13:54:00Z",
+   "lastUpdated": "2022-12-19T13:51:24Z"
+  },
+  {
+   "lineName": "World Trade Center",
+   "headsign": "World Trade Center",
+   "route": "HOB_WTC",
+   "routeDisplayName": "Hoboken - World Trade Center",
+   "direction": "TO_NY",
+   "lineColors": [
+    "#65C100"
+   ],
+   "status": "ON_TIME",
+   "projectedArrival": "2022-12-19T14:00:00Z",
+   "lastUpdated": "2022-12-19T13:51:24Z"
+  }
+ ]
+}
