@@ -52,7 +52,7 @@ function getDepartures(station, route) {
         .then(resp => resp.json())
         .then(json => ({
             departures: getDeparturesFromJson(json, route, now),
-            method: ids.API,
+            method: ids.MRAZZA_API,
         }));
 }
 

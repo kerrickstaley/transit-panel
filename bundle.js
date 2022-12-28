@@ -15,7 +15,13 @@ const HOBOKEN_TO_BROOKFIELD_FERRY = 'HOBOKEN_TO_BROOKFIELD_FERRY';
 
 // methods
 const SCHEDULE = 'SCHEDULE';
-const API = 'API';
+const MRAZZA_API = 'MRAZZA_API';
+const RIDEPATH_API = 'RIDEPATH_API';
+
+
+function isApi(method) {
+    return method == MRAZZA_API || method == RIDEPATH_API;
+}
 
 module.exports = {
     HOBOKEN: HOBOKEN,
@@ -27,7 +33,9 @@ module.exports = {
     HOBOKEN_FERRY: HOBOKEN_FERRY,
     HOBOKEN_TO_BROOKFIELD_FERRY: HOBOKEN_TO_BROOKFIELD_FERRY,
     SCHEDULE: SCHEDULE,
-    API: API,
+    MRAZZA_API: MRAZZA_API,
+    RIDEPATH_API: RIDEPATH_API,
+    isApi: isApi,
 };
 
 },{}],3:[function(require,module,exports){
@@ -42,9 +50,6 @@ const ids = require('./ids');
 const walkTimeFromAptDoorToPathSec = 10 * 60;
 const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
 const maxLeaveSecToShowOption = 90 * 60;
-
-const METHOD_SCHEDULE = 'SCHEDULE';
-const METHOD_API = 'API';
 
 function getLeaveSecGeneric(station, route, walkSec, getDeparturesFuncs) {
     let promises = getDeparturesFuncs.map(f => f(station, route));
@@ -94,7 +99,11 @@ function getBrookfieldFerryLeaveSec() {
 }
 
 function methodAbbrev(method) {
-    return method.substr(0, 3);
+    return {
+        [ids.SCHEDULE]: 'SCH',
+        [ids.MRAZZA_API]: 'MAPI',
+        [ids.RIDEPATH_API]: 'RAPI',
+    }[method];
 }
 
 // Display remaining minutes before you need to leave in order to catch a given transit option.
@@ -118,10 +127,10 @@ function displayLeaveMinUpdateLoop(rowId, leaveSecFunc) {
             methodDiv.innerHTML = methodAbbrev(method);
         }
         let sleepSec = ((leaveSec % secPerMin) + secPerMin) % secPerMin;
-        if (method == METHOD_SCHEDULE) {
+        if (method == ids.SCHEDULE) {
             // + .1 is a little hack to make sure that the minute has definitely rolled over by the time we get there.
             sleepSec += .1;
-        } else if (method == METHOD_API) {
+        } else if (ids.isApi(method)) {
             sleepSec = Math.min(30, sleepSec + 5);
         } else {
             console.log('unreachable');
@@ -218,7 +227,7 @@ function getDepartures(station, route) {
         .then(resp => resp.json())
         .then(json => ({
             departures: getDeparturesFromJson(json, route, now),
-            method: ids.API,
+            method: ids.MRAZZA_API,
         }));
 }
 
@@ -8925,7 +8934,7 @@ function getDeparturesOld(stationsRoutes) {
                 station: station,
                 route: route,
                 departures: getDeparturesFromJson(json, station, route),
-                method: ids.API,
+                method: ids.RIDEPATH_API,
             });
         }
         return ret;
@@ -8936,7 +8945,7 @@ function getDepartures(station, route) {
     return getDeparturesOld([[station, route]]).then(result => {
         return {
             departures: result[0].departures,
-            method: ids.API,
+            method: ids.RIDEPATH_API,
         };
     });
 }

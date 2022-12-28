@@ -12,7 +12,13 @@ const HOBOKEN_TO_BROOKFIELD_FERRY = 'HOBOKEN_TO_BROOKFIELD_FERRY';
 
 // methods
 const SCHEDULE = 'SCHEDULE';
-const API = 'API';
+const MRAZZA_API = 'MRAZZA_API';
+const RIDEPATH_API = 'RIDEPATH_API';
+
+
+function isApi(method) {
+    return method == MRAZZA_API || method == RIDEPATH_API;
+}
 
 module.exports = {
     HOBOKEN: HOBOKEN,
@@ -24,5 +30,7 @@ module.exports = {
     HOBOKEN_FERRY: HOBOKEN_FERRY,
     HOBOKEN_TO_BROOKFIELD_FERRY: HOBOKEN_TO_BROOKFIELD_FERRY,
     SCHEDULE: SCHEDULE,
-    API: API,
+    MRAZZA_API: MRAZZA_API,
+    RIDEPATH_API: RIDEPATH_API,
+    isApi: isApi,
 };

@@ -68,7 +68,7 @@ function getDeparturesOld(stationsRoutes) {
                 station: station,
                 route: route,
                 departures: getDeparturesFromJson(json, station, route),
-                method: ids.API,
+                method: ids.RIDEPATH_API,
             });
         }
         return ret;
@@ -79,7 +79,7 @@ function getDepartures(station, route) {
     return getDeparturesOld([[station, route]]).then(result => {
         return {
             departures: result[0].departures,
-            method: ids.API,
+            method: ids.RIDEPATH_API,
         };
     });
 }

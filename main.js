@@ -10,9 +10,6 @@ const walkTimeFromAptDoorToPathSec = 10 * 60;
 const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
 const maxLeaveSecToShowOption = 90 * 60;
 
-const METHOD_SCHEDULE = 'SCHEDULE';
-const METHOD_API = 'API';
-
 function getLeaveSecGeneric(station, route, walkSec, getDeparturesFuncs) {
     let promises = getDeparturesFuncs.map(f => f(station, route));
     return Promise.allSettled(promises).then(allDepartures => {
@@ -61,7 +58,11 @@ function getBrookfieldFerryLeaveSec() {
 }
 
 function methodAbbrev(method) {
-    return method.substr(0, 3);
+    return {
+        [ids.SCHEDULE]: 'SCH',
+        [ids.MRAZZA_API]: 'MAPI',
+        [ids.RIDEPATH_API]: 'RAPI',
+    }[method];
 }
 
 // Display remaining minutes before you need to leave in order to catch a given transit option.
@@ -85,10 +86,10 @@ function displayLeaveMinUpdateLoop(rowId, leaveSecFunc) {
             methodDiv.innerHTML = methodAbbrev(method);
         }
         let sleepSec = ((leaveSec % secPerMin) + secPerMin) % secPerMin;
-        if (method == METHOD_SCHEDULE) {
+        if (method == ids.SCHEDULE) {
             // + .1 is a little hack to make sure that the minute has definitely rolled over by the time we get there.
             sleepSec += .1;
-        } else if (method == METHOD_API) {
+        } else if (ids.isApi(method)) {
             sleepSec = Math.min(30, sleepSec + 5);
         } else {
             console.log('unreachable');
