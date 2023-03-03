@@ -158,15 +158,18 @@ function getRandomLeaveSec(maxMin) {
     return () => Promise.resolve(maxMin * 60 * Math.random());
 }
 
-function getConfigName() {
+function getConfig() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('config')) {
-        return urlParams.get('config');
+        return JSON.parse(urlParams.get('config'));
     }
-    return 'home';
+    if (urlParams.has('configName')) {
+        return config[urlParams.get('configName')];
+    }
+    return config['home'];
 }
 
-config[getConfigName()].stations.forEach(station => station.routes.forEach(route =>
+getConfig().stations.forEach(station => station.routes.forEach(route =>
     displayLeaveMinUpdateLoop(route.htmlId, () =>
         getLeaveSec(station.name, route.name, station.walkTimeSec))));
 
