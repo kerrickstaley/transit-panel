@@ -4,6 +4,7 @@ import dateutil.parser
 import requests
 import time
 import typing
+import os
 import pytz
 import argparse
 import enum
@@ -210,11 +211,18 @@ def scrape_once(stations, csv_file, quiet):
                 print(d.csv_line(), file=csv_file)
 
 
+def maybe_write_csv_headers(csv_file):
+    if not os.path.exists(csv_file):
+        with open(csv_file, 'w') as f:
+            print(','.join(Observation._fields), file=f)
+
+
 def main(args):
     stations = [Station[s.upper()] for s in args.stations.split(',')]
 
     csv_file = None
     if args.csv_file is not None:
+        maybe_write_csv_headers(args.csv_file)
         csv_file = open(args.csv_file, 'a')
 
     if args.loop_every is not None:
