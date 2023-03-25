@@ -2,6 +2,7 @@
 import datetime
 import dateutil.parser
 import requests
+import time
 import typing
 import pytz
 import argparse
@@ -13,8 +14,10 @@ OFFICIAL_URL = 'https://www.panynj.gov/bin/portauthority/ridepath.json'
 TZ = pytz.timezone('America/New_York')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--csvfile', help='CSV file to write output to')
+parser.add_argument('--csv-file', help='CSV file to write output to')
 parser.add_argument('--stations', help='Comma-separated list of stations to scrape', default='hoboken')
+parser.add_argument('--loop-every', type=int, default=None, help='Scrape in a loop every n seconds')
+parser.add_argument('--quiet', help="Don't print output (only useful in conjunction with --csv-file)", action='store_true')
 
 
 class Station(enum.Enum):
@@ -133,9 +136,10 @@ def get_departures_mrazza(station):
     # Probably not needed for the prod mrazza API?
     while True:
         try:
-            j = requests.get(MRAZZA_URL_FMT.format(station=station.name.lower()), timeout=0.5).json()
+            j = requests.get(MRAZZA_URL_FMT.format(station=station.name.lower()), timeout=1.0).json()
             break
         except requests.exceptions.ReadTimeout:
+            print('got ReadTimeout', file=sys.stderr)
             pass
 
     fetch_time = datetime.datetime.now(TZ)
@@ -187,23 +191,40 @@ class GetDeparturesOfficial:
         return sorted(ret)
 
 
-def main(args):
-    stations = [Station[s.upper()] for s in args.stations.split(',')]
+def scrape_once(stations, csv_file, quiet):
+    if not quiet:
+        print(datetime.datetime.now())
 
     get_departures_official = GetDeparturesOfficial()
-
-    if args.csvfile is not None:
-        csvfile = open(args.csvfile, 'a')
-
     for station in stations:
         mrazza = get_departures_mrazza(station)
         official = get_departures_official(station)
-        print('mrazza:  ', short_repr(mrazza))
-        print('official:', short_repr(official))
 
-        if args.csvfile is not None:
+        if not quiet:
+            print(f'  {station}')
+            print('    mrazza:  ', short_repr(mrazza))
+            print('    official:', short_repr(official))
+
+        if csv_file is not None:
             for d in mrazza + official:
-                print(d.csv_line(), file=csvfile)
+                print(d.csv_line(), file=csv_file)
+
+
+def main(args):
+    stations = [Station[s.upper()] for s in args.stations.split(',')]
+
+    csv_file = None
+    if args.csv_file is not None:
+        csv_file = open(args.csv_file, 'a')
+
+    if args.loop_every is not None:
+        while True:
+            start = time.time()
+            scrape_once(stations, csv_file, args.quiet)
+            time.sleep(max(start + args.loop_every - time.time(), 0))
+
+    else:
+        scrape_once(stations, csv_file, args.quiet)
 
 
 if __name__ == '__main__' and not hasattr(sys, 'ps1'):
