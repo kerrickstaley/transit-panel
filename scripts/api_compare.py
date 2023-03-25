@@ -210,7 +210,8 @@ def scrape_once(stations, csv_file, quiet):
             for d in mrazza + official:
                 print(d.csv_line(), file=csv_file)
 
-    csv_file.flush()
+    if csv_file is not None:
+        csv_file.flush()
 
 
 def maybe_write_csv_headers(csv_file):
