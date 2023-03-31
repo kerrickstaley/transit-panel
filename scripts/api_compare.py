@@ -175,7 +175,7 @@ class GetDeparturesOfficial:
                 station_json = result
                 break
         else:
-            raise Exception('Did not find Hoboken')
+            raise Exception(f'Did not find {station}')
 
         ret = []
         for dest in station_json['destinations']:
