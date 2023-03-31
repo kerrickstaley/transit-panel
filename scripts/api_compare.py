@@ -141,7 +141,8 @@ def get_departures_mrazza(station):
             break
         except requests.exceptions.ReadTimeout:
             print('got ReadTimeout', file=sys.stderr)
-            pass
+        except requests.exceptions.ConnectTimeout:
+            print('got ConnectTimeout', file=sys.stderr)
 
     fetch_time = datetime.datetime.now(TZ)
     ret = []
