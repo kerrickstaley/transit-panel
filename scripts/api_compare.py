@@ -133,16 +133,18 @@ def short_repr(obj):
 
 
 def get_departures_mrazza(station):
-    # For some reason like 1/2 the requests I send locally to the API hang :(
-    # Probably not needed for the prod mrazza API?
+    backoff = 0.5
     while True:
+        backoff *= 2
         try:
             j = requests.get(MRAZZA_URL_FMT.format(station=station.name.lower()), timeout=1.0).json()
             break
         except requests.exceptions.ReadTimeout:
             print('got ReadTimeout', file=sys.stderr)
+            time.sleep(backoff)
         except requests.exceptions.ConnectTimeout:
             print('got ConnectTimeout', file=sys.stderr)
+            time.sleep(backoff)
 
     fetch_time = datetime.datetime.now(TZ)
     ret = []
