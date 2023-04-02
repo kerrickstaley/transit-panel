@@ -97,7 +97,8 @@ class Observation(typing.NamedTuple):
         if self.sec_to_arrival > other.sec_to_arrival:
             return False
 
-        return typing.NamedTuple.__lt__(self, other)
+        # self and other are equal
+        return False
 
     def __eq__(self, other):
         return not (self < other or other < self)
