@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import datetime
 import dateutil.parser
+import json
 import requests
 import time
 import typing
@@ -138,14 +139,23 @@ def get_departures_mrazza(station):
     while True:
         backoff *= 2
         try:
-            j = requests.get(MRAZZA_URL_FMT.format(station=station.name.lower()), timeout=1.0).json()
-            break
-        except requests.exceptions.ReadTimeout:
-            print('got ReadTimeout', file=sys.stderr)
+            resp = requests.get(MRAZZA_URL_FMT.format(station=station.name.lower()), timeout=2.0)
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, simplejson.errors.JSONDecodeError) as e:
+            print(
+                f'got {type(e).__name__} connecting to mrazza API, will try again in {backoff} seconds',
+                file=sys.stderr)
             time.sleep(backoff)
-        except requests.exceptions.ConnectTimeout:
-            print('got ConnectTimeout', file=sys.stderr)
+            continue
+
+        try:
+            j = json.loads(resp.text)
+        except json.decoder.JSONDecodeError as e:
+            print(f'got {type(e).__name__} decoding json response from mrazza API, will try again in {backoff} seconds',
+                file=sys.stderr)
             time.sleep(backoff)
+            continue
+
+        break
 
     fetch_time = datetime.datetime.now(TZ)
     ret = []
