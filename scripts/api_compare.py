@@ -140,7 +140,7 @@ def get_departures_mrazza(station):
         backoff *= 2
         try:
             resp = requests.get(MRAZZA_URL_FMT.format(station=station.name.lower()), timeout=2.0)
-        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, simplejson.errors.JSONDecodeError) as e:
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout) as e:
             print(
                 f'got {type(e).__name__} connecting to mrazza API, will try again in {backoff} seconds',
                 file=sys.stderr)
