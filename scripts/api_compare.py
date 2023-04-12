@@ -134,29 +134,37 @@ def short_repr(obj):
     return '[' + ', '.join([d.short_repr() for d in obj]) + ']'
 
 
-def get_departures_mrazza(station):
+def fetch_json_with_backoff(url):
     backoff = 0.5
     while True:
         backoff *= 2
         try:
-            resp = requests.get(MRAZZA_URL_FMT.format(station=station.name.lower()), timeout=2.0)
+            resp = requests.get(url, timeout=2.0)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout) as e:
             print(
-                f'got {type(e).__name__} connecting to mrazza API, will try again in {backoff} seconds',
+                f'got {type(e).__name__} fetching {url}, will try again in {backoff} seconds',
+                file=sys.stderr)
+            time.sleep(backoff)
+            continue
+
+        if resp.status_code != 200:
+            print(
+                f'got code {resp.status_code} fetching {url}, will try again in {backoff} seconds. Body: {resp.text}',
                 file=sys.stderr)
             time.sleep(backoff)
             continue
 
         try:
-            j = json.loads(resp.text)
+            return json.loads(resp.text)
         except json.decoder.JSONDecodeError as e:
-            print(f'got {type(e).__name__} decoding json response from mrazza API, will try again in {backoff} seconds',
+            print(f'got {type(e).__name__} decoding json response from {url}, will try again in {backoff} seconds',
                 file=sys.stderr)
             time.sleep(backoff)
             continue
 
-        break
 
+def get_departures_mrazza(station):
+    j = fetch_json_with_backoff(MRAZZA_URL_FMT.format(station=station.name.lower()))
     fetch_time = datetime.datetime.now(TZ)
     ret = []
     for train in j['upcomingTrains']:
@@ -179,7 +187,7 @@ class GetDeparturesOfficial:
     def __call__(self, station):
         if not hasattr(self, 'resp_json'):
             self.fetch_time = datetime.datetime.now(TZ)
-            self.resp_json = requests.get(OFFICIAL_URL).json()
+            self.resp_json = fetch_json_with_backoff(OFFICIAL_URL)
 
         for result in self.resp_json['results']:
             if result['consideredStation'] == STATION_OFFICIAL_ABBREV[station]:
