@@ -186,8 +186,8 @@ def get_departures_mrazza(station):
 class GetDeparturesOfficial:
     def __call__(self, station):
         if not hasattr(self, 'resp_json'):
-            self.fetch_time = datetime.datetime.now(TZ)
             self.resp_json = fetch_json_with_backoff(OFFICIAL_URL)
+            self.fetch_time = datetime.datetime.now(TZ)
 
         for result in self.resp_json['results']:
             if result['consideredStation'] == STATION_OFFICIAL_ABBREV[station]:
