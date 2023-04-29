@@ -140,7 +140,7 @@ def fetch_json_with_backoff(url):
         backoff *= 2
         try:
             resp = requests.get(url, timeout=2.0)
-        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout) as e:
+        except (requests.exceptions.ReadTimeout, requests.exceptions.ConnectTimeout, requests.exceptions.ConnectionError) as e:
             print(
                 f'got {type(e).__name__} fetching {url}, will try again in {backoff} seconds',
                 file=sys.stderr)
