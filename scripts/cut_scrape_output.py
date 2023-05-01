@@ -43,6 +43,7 @@ def remove_other_departures(rows, scheduled_departure):
 def main(args):
     reader = csv.DictReader(open(args.in_file))
     out_rows = []
+    # TODO can binary search for start position
     for row in reader:
         if args.station is not None and row['station'].lower() != args.station.lower():
             continue
@@ -84,6 +85,7 @@ def main(args):
     writer = csv.DictWriter(out_file, out_fields, lineterminator='\n')
     writer.writeheader()
     for row in out_rows:
+        # TODO can trim extra rows at the end
         writer.writerow(row)
 
 
