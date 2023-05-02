@@ -79,6 +79,10 @@ def main(args):
 
     binary_search_start(reader, in_file, args.scheduled_departure - dt.timedelta(minutes=args.look_behind_min + 30))
     for row in reader:
+        fetch_time = dateutil.parser.parse(row['fetch_time'])
+        if fetch_time > args.scheduled_departure + dt.timedelta(minutes=args.look_ahead_min):
+            break
+
         if args.station is not None and row['station'].lower() != args.station.lower():
             continue
 
