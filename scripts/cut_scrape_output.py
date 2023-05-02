@@ -5,6 +5,7 @@ import datetime as dt
 import csv
 import sys
 import itertools
+import os
 
 argparser = argparse.ArgumentParser(description="snip out relevant segment of api_compare.py log file")
 argparser.add_argument('--station')
@@ -40,10 +41,43 @@ def remove_other_departures(rows, scheduled_departure):
     return [row for row in rows if tuple(row.items()) in keep_rows]
 
 
+def binary_search_start(csv_reader, in_file, target_time, time_field='fetch_time'):
+    """
+    Seek to some point in the file such that time_field is slightly before target_time.
+    """
+    next(csv_reader)
+    # https://stackoverflow.com/questions/29618936/how-to-solve-oserror-telling-position-disabled-by-next-call for why we need the next two lines
+    in_file.seek(0)
+    in_file.readline()
+    lower_bound = in_file.tell()
+    in_file.seek(0, os.SEEK_END)
+    upper_bound = in_file.tell()
+
+    while lower_bound < upper_bound:
+        mid = (lower_bound + upper_bound) // 2
+        in_file.seek(mid)
+        while in_file.read(1) not in ['\n', '']:
+            continue
+        new_position = in_file.tell()
+
+        if new_position == upper_bound:
+            break
+
+        row = next(csv_reader)
+        if dateutil.parser.parse(row[time_field]) < target_time:
+            lower_bound = new_position
+        else:
+            upper_bound = new_position
+
+    in_file.seek(lower_bound)
+
+
 def main(args):
-    reader = csv.DictReader(open(args.in_file))
+    in_file = open(args.in_file)
+    reader = csv.DictReader(in_file)
     out_rows = []
-    # TODO can binary search for start position
+
+    binary_search_start(reader, in_file, args.scheduled_departure - dt.timedelta(minutes=args.look_behind_min + 30))
     for row in reader:
         if args.station is not None and row['station'].lower() != args.station.lower():
             continue
