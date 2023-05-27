@@ -1,245 +1,4 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-module.exports={"home":{"stations":[{"name":"HOBOKEN","walkTimeSec":600,"routes":[{"name":"WTC","htmlId":"path-to-wtc-row"},{"name":"_33RD_ST","htmlId":"path-to-33rd-row"}]},{"name":"HOBOKEN_FERRY","walkTimeSec":600,"routes":[{"name":"HOBOKEN_TO_BROOKFIELD_FERRY","htmlId":"ferry-to-brookfield-row"}]}]},"work":{"stations":[{"name":"WTC","walkTimeSec":600,"routes":[{"name":"HOBOKEN","htmlId":"path-to-wtc-row"}]}]}}
-},{}],2:[function(require,module,exports){
-// stations
-const HOBOKEN = 'HOBOKEN';
-const NEWPORT = 'NEWPORT';
-const _33RD_ST = '_33RD_ST';
-const WTC = 'WTC';
-const JOURNAL_SQUARE = 'JOURNAL_SQUARE';
-const NEWARK = 'NEWARK';
-const HOBOKEN_FERRY = 'HOBOKEN_FERRY';
-
-// routes
-const HOBOKEN_TO_BROOKFIELD_FERRY = 'HOBOKEN_TO_BROOKFIELD_FERRY';
-
-// methods
-const SCHEDULE = 'SCHEDULE';
-const MRAZZA_API = 'MRAZZA_API';
-const RIDEPATH_API = 'RIDEPATH_API';
-
-
-function isApi(method) {
-    return method == MRAZZA_API || method == RIDEPATH_API;
-}
-
-module.exports = {
-    HOBOKEN: HOBOKEN,
-    NEWPORT: NEWPORT,
-    _33RD_ST: _33RD_ST,
-    WTC: WTC,
-    JOURNAL_SQUARE: JOURNAL_SQUARE,
-    NEWARK: NEWARK,
-    HOBOKEN_FERRY: HOBOKEN_FERRY,
-    HOBOKEN_TO_BROOKFIELD_FERRY: HOBOKEN_TO_BROOKFIELD_FERRY,
-    SCHEDULE: SCHEDULE,
-    MRAZZA_API: MRAZZA_API,
-    RIDEPATH_API: RIDEPATH_API,
-    isApi: isApi,
-};
-
-},{}],3:[function(require,module,exports){
-"use strict";
-
-const config = require('./config.json');
-const schedule = require('./schedule');
-const pathOfficial = require('./pathOfficial');
-const mrazza = require('./mrazza');
-const ids = require('./ids');
-
-const walkTimeFromAptDoorToPathSec = 10 * 60;
-const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
-const maxLeaveSecToShowOption = 90 * 60;
-
-function getLeaveSecGeneric(station, route, walkSec, getDeparturesFuncs) {
-    let promises = getDeparturesFuncs.map(f => f(station, route));
-    return Promise.allSettled(promises).then(allDepartures => {
-        let leaveSecs = allDepartures.flatMap(result => {
-            if (result.status != 'fulfilled') {
-                console.log('Promise broken: ' + JSON.stringify(result));
-                return [];
-            }
-            let leaveSecs = result.value.departures.flatMap(d => {
-                let leaveSec = d - walkSec;
-                return leaveSec >= 0 ? [leaveSec] : [];
-            });
-            return leaveSecs.length >= 1 ? [{leaveSec: leaveSecs[0], method: result.value.method}] : [];
-        });
-        return leaveSecs.length >= 1 ? leaveSecs[0] : null;
-    });
-}
-
-function getLeaveSecPath(station, route, walkSec) {
-    return getLeaveSecGeneric(station, route, walkSec, [mrazza.getDepartures, schedule.getDepartures]);
-}
-
-function getLeaveSecFerry(station, route, walkSec) {
-    return getLeaveSecGeneric(station, route, walkSec, [schedule.getDepartures]);
-}
-
-function getLeaveSec(station, route, walkSec) {
-    let method = {
-        [ids.HOBOKEN]: getLeaveSecPath,
-        [ids.WTC]: getLeaveSecPath,
-        [ids.HOBOKEN_FERRY]: getLeaveSecFerry,
-    }[station];
-    return method(station, route, walkSec);
-}
-
-function getPathTo33rdLeaveSec() {
-    return getLeaveSec(ids.HOBOKEN, ids._33RD_ST, walkTimeFromAptDoorToPathSec);
-}
-
-function getWtcPathLeaveSec() {
-    return getLeaveSec(ids.HOBOKEN, ids.WTC, walkTimeFromAptDoorToPathSec);
-}
-
-function getBrookfieldFerryLeaveSec() {
-    return getLeaveSec(ids.HOBOKEN_FERRY, ids.HOBOKEN_TO_BROOKFIELD_FERRY, walkTimeFromAptDoorToFerrySec);
-}
-
-function methodAbbrev(method) {
-    return {
-        [ids.SCHEDULE]: 'SCH',
-        [ids.MRAZZA_API]: 'MAPI',
-        [ids.RIDEPATH_API]: 'RAPI',
-    }[method];
-}
-
-// Display remaining minutes before you need to leave in order to catch a given transit option.
-//
-// Runs the function to compute the remaining time (returned as a Promise), displays that value
-// in the given div, then calls setTimeout to run the update again when the value changes.
-function displayLeaveMinUpdateLoop(rowId, leaveSecFunc) {
-    const secPerMin = 60;  // Can set this to 1 to see the value update every second for testing.
-    leaveSecFunc().then(({leaveSec, method}) => {
-        let row = document.getElementById(rowId);
-        if (leaveSec < maxLeaveSecToShowOption) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-        let leaveMin = Math.floor(leaveSec / secPerMin);
-        // This is probably poor style.
-        row.querySelector('.leave-in-min').innerHTML = leaveMin;
-        let methodDiv = row.querySelector('.method');
-        if (methodDiv !== null) {
-            methodDiv.innerHTML = methodAbbrev(method);
-        }
-        let sleepSec = ((leaveSec % secPerMin) + secPerMin) % secPerMin;
-        if (method == ids.SCHEDULE) {
-            // + .1 is a little hack to make sure that the minute has definitely rolled over by the time we get there.
-            sleepSec += .1;
-        } else if (ids.isApi(method)) {
-            sleepSec = Math.min(30, sleepSec + 5);
-        } else {
-            console.log('unreachable');
-            return;
-        }
-        sleepSec = Math.max(10, sleepSec);  // Avoid hitting the API too much
-        setTimeout(() => displayLeaveMinUpdateLoop(rowId, leaveSecFunc), sleepSec * 1000);
-    });
-}
-
-function addFullscreenButton() {
-    var button = document.createElement('button');
-    button.innerHTML = 'Click to go fullscreen';
-    document.body.appendChild(button);
-    button.onclick = el => {
-        document.querySelector('body').requestFullscreen().catch(err => {
-            alert('Unable to fullscreen: ' + err.message);
-        });
-        button.style['display'] = 'none';
-    };
-}
-
-// Used for demos.
-function getRandomLeaveSec(maxMin) {
-    return () => Promise.resolve(maxMin * 60 * Math.random());
-}
-
-function getConfig() {
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('config')) {
-        return JSON.parse(urlParams.get('config'));
-    }
-    if (urlParams.has('configName')) {
-        return config[urlParams.get('configName')];
-    }
-    return config['home'];
-}
-
-getConfig().stations.forEach(station => station.routes.forEach(route =>
-    displayLeaveMinUpdateLoop(route.htmlId, () =>
-        getLeaveSec(station.name, route.name, station.walkTimeSec))));
-
-addFullscreenButton();
-
-},{"./config.json":1,"./ids":2,"./mrazza":4,"./pathOfficial":6,"./schedule":7}],4:[function(require,module,exports){
-const ids = require('./ids');
-
-// This fetches from mrazza's API; see https://github.com/mrazza/path-data
-
-const stationToApiId = {
-    [ids.HOBOKEN]: 'hoboken',
-    [ids.NEWPORT]: 'newport',
-    [ids.WTC]: 'world_trade_center',
-    [ids._33RD_ST]: 'thirty_third_street',
-    [ids.JOURNAL_SQUARE]: 'journal_square',
-    [ids.NEWARK]: 'newark',
-};
-
-const routeToApiDirectionAndRoutes = {
-    [ids.WTC]: {
-        direction: 'TO_NY',
-        routes: ['HOB_WTC', 'NWK_WTC'],
-    },
-    [ids.HOBOKEN]: {
-        direction: 'TO_NJ',
-        routes: ['HOB_WTC', 'HOB_33'],
-    },
-    [ids._33RD_ST]: {
-        direction: 'TO_NY',
-        routes: ['HOB_33', 'JSQ_33', 'JSQ_33_HOB'],
-    },
-    [ids.NEWARK]: {
-        direction: 'TO_NJ',
-        routes: ['NWK_WTC'],
-    },
-    [ids.JOURNAL_SQUARE]: {
-        direction: 'TO_NJ',
-        routes: ['JSQ_33', 'JSQ_33_HOB'],
-    }
-};
-
-function stationUrl(stationId) {
-    return `https://path.api.razza.dev/v1/stations/${stationToApiId[stationId]}/realtime`;
-}
-
-function getDeparturesFromJson(json, route, now) {
-    const {direction, routes} = routeToApiDirectionAndRoutes[route];
-    return json.upcomingTrains
-        .filter(train => direction == train.direction && routes.includes(train.route))
-        .map(train => (new Date(train.projectedArrival) - now) / 1000)
-        .filter(secs => secs >= 0);
-}
-
-function getDepartures(station, route) {
-    let now = new Date();
-    return fetch(stationUrl(station))
-        .then(resp => resp.json())
-        .then(json => ({
-            departures: getDeparturesFromJson(json, route, now),
-            method: ids.MRAZZA_API,
-        }));
-}
-
-module.exports = {
-    getDeparturesFromJson: getDeparturesFromJson,
-    getDepartures: getDepartures,
-};
-
-},{"./ids":2}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -8866,7 +8625,248 @@ exports.VERSION = VERSION;
 exports.Zone = Zone;
 
 
-},{}],6:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
+module.exports={"home":{"stations":[{"name":"HOBOKEN","walkTimeSec":600,"routes":[{"name":"WTC","htmlId":"path-to-wtc-row"},{"name":"_33RD_ST","htmlId":"path-to-33rd-row"}]},{"name":"HOBOKEN_FERRY","walkTimeSec":600,"routes":[{"name":"HOBOKEN_TO_BROOKFIELD_FERRY","htmlId":"ferry-to-brookfield-row"}]}]},"work":{"stations":[{"name":"WTC","walkTimeSec":600,"routes":[{"name":"HOBOKEN","htmlId":"path-to-wtc-row"}]}]}}
+},{}],3:[function(require,module,exports){
+// stations
+const HOBOKEN = 'HOBOKEN';
+const NEWPORT = 'NEWPORT';
+const _33RD_ST = '_33RD_ST';
+const WTC = 'WTC';
+const JOURNAL_SQUARE = 'JOURNAL_SQUARE';
+const NEWARK = 'NEWARK';
+const HOBOKEN_FERRY = 'HOBOKEN_FERRY';
+
+// routes
+const HOBOKEN_TO_BROOKFIELD_FERRY = 'HOBOKEN_TO_BROOKFIELD_FERRY';
+
+// methods
+const SCHEDULE = 'SCHEDULE';
+const MRAZZA_API = 'MRAZZA_API';
+const RIDEPATH_API = 'RIDEPATH_API';
+
+
+function isApi(method) {
+    return method == MRAZZA_API || method == RIDEPATH_API;
+}
+
+module.exports = {
+    HOBOKEN: HOBOKEN,
+    NEWPORT: NEWPORT,
+    _33RD_ST: _33RD_ST,
+    WTC: WTC,
+    JOURNAL_SQUARE: JOURNAL_SQUARE,
+    NEWARK: NEWARK,
+    HOBOKEN_FERRY: HOBOKEN_FERRY,
+    HOBOKEN_TO_BROOKFIELD_FERRY: HOBOKEN_TO_BROOKFIELD_FERRY,
+    SCHEDULE: SCHEDULE,
+    MRAZZA_API: MRAZZA_API,
+    RIDEPATH_API: RIDEPATH_API,
+    isApi: isApi,
+};
+
+},{}],4:[function(require,module,exports){
+"use strict";
+
+const config = require('./config.json');
+const schedule = require('./schedule');
+const pathOfficial = require('./pathOfficial');
+const mrazza = require('./mrazza');
+const ids = require('./ids');
+
+const walkTimeFromAptDoorToPathSec = 10 * 60;
+const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
+const maxLeaveSecToShowOption = 90 * 60;
+
+function getLeaveSecGeneric(station, route, walkSec, getDeparturesFuncs) {
+    let promises = getDeparturesFuncs.map(f => f(station, route));
+    return Promise.allSettled(promises).then(allDepartures => {
+        let leaveSecs = allDepartures.flatMap(result => {
+            if (result.status != 'fulfilled') {
+                console.log('Promise broken: ' + JSON.stringify(result));
+                return [];
+            }
+            let leaveSecs = result.value.departures.flatMap(d => {
+                let leaveSec = d - walkSec;
+                return leaveSec >= 0 ? [leaveSec] : [];
+            });
+            return leaveSecs.length >= 1 ? [{leaveSec: leaveSecs[0], method: result.value.method}] : [];
+        });
+        return leaveSecs.length >= 1 ? leaveSecs[0] : null;
+    });
+}
+
+function getLeaveSecPath(station, route, walkSec) {
+    return getLeaveSecGeneric(station, route, walkSec, [mrazza.getDepartures, schedule.getDepartures]);
+}
+
+function getLeaveSecFerry(station, route, walkSec) {
+    return getLeaveSecGeneric(station, route, walkSec, [schedule.getDepartures]);
+}
+
+function getLeaveSec(station, route, walkSec) {
+    let method = {
+        [ids.HOBOKEN]: getLeaveSecPath,
+        [ids.WTC]: getLeaveSecPath,
+        [ids.HOBOKEN_FERRY]: getLeaveSecFerry,
+    }[station];
+    return method(station, route, walkSec);
+}
+
+function getPathTo33rdLeaveSec() {
+    return getLeaveSec(ids.HOBOKEN, ids._33RD_ST, walkTimeFromAptDoorToPathSec);
+}
+
+function getWtcPathLeaveSec() {
+    return getLeaveSec(ids.HOBOKEN, ids.WTC, walkTimeFromAptDoorToPathSec);
+}
+
+function getBrookfieldFerryLeaveSec() {
+    return getLeaveSec(ids.HOBOKEN_FERRY, ids.HOBOKEN_TO_BROOKFIELD_FERRY, walkTimeFromAptDoorToFerrySec);
+}
+
+function methodAbbrev(method) {
+    return {
+        [ids.SCHEDULE]: 'SCH',
+        [ids.MRAZZA_API]: 'MAPI',
+        [ids.RIDEPATH_API]: 'RAPI',
+    }[method];
+}
+
+// Display remaining minutes before you need to leave in order to catch a given transit option.
+//
+// Runs the function to compute the remaining time (returned as a Promise), displays that value
+// in the given div, then calls setTimeout to run the update again when the value changes.
+function displayLeaveMinUpdateLoop(rowId, leaveSecFunc) {
+    const secPerMin = 60;  // Can set this to 1 to see the value update every second for testing.
+    leaveSecFunc().then(({leaveSec, method}) => {
+        let row = document.getElementById(rowId);
+        if (leaveSec < maxLeaveSecToShowOption) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+        let leaveMin = Math.floor(leaveSec / secPerMin);
+        // This is probably poor style.
+        row.querySelector('.leave-in-min').innerHTML = leaveMin;
+        let methodDiv = row.querySelector('.method');
+        if (methodDiv !== null) {
+            methodDiv.innerHTML = methodAbbrev(method);
+        }
+        let sleepSec = ((leaveSec % secPerMin) + secPerMin) % secPerMin;
+        if (method == ids.SCHEDULE) {
+            // + .1 is a little hack to make sure that the minute has definitely rolled over by the time we get there.
+            sleepSec += .1;
+        } else if (ids.isApi(method)) {
+            sleepSec = Math.min(30, sleepSec + 5);
+        } else {
+            console.log('unreachable');
+            return;
+        }
+        sleepSec = Math.max(10, sleepSec);  // Avoid hitting the API too much
+        setTimeout(() => displayLeaveMinUpdateLoop(rowId, leaveSecFunc), sleepSec * 1000);
+    });
+}
+
+function addFullscreenButton() {
+    var button = document.createElement('button');
+    button.innerHTML = 'Click to go fullscreen';
+    document.body.appendChild(button);
+    button.onclick = el => {
+        document.querySelector('body').requestFullscreen().catch(err => {
+            alert('Unable to fullscreen: ' + err.message);
+        });
+        button.style['display'] = 'none';
+    };
+}
+
+// Used for demos.
+function getRandomLeaveSec(maxMin) {
+    return () => Promise.resolve(maxMin * 60 * Math.random());
+}
+
+function getConfig() {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('config')) {
+        return JSON.parse(urlParams.get('config'));
+    }
+    if (urlParams.has('configName')) {
+        return config[urlParams.get('configName')];
+    }
+    return config['home'];
+}
+
+getConfig().stations.forEach(station => station.routes.forEach(route =>
+    displayLeaveMinUpdateLoop(route.htmlId, () =>
+        getLeaveSec(station.name, route.name, station.walkTimeSec))));
+
+addFullscreenButton();
+
+},{"./config.json":2,"./ids":3,"./mrazza":5,"./pathOfficial":6,"./schedule":7}],5:[function(require,module,exports){
+const ids = require('./ids');
+
+// This fetches from mrazza's API; see https://github.com/mrazza/path-data
+
+const stationToApiId = {
+    [ids.HOBOKEN]: 'hoboken',
+    [ids.NEWPORT]: 'newport',
+    [ids.WTC]: 'world_trade_center',
+    [ids._33RD_ST]: 'thirty_third_street',
+    [ids.JOURNAL_SQUARE]: 'journal_square',
+    [ids.NEWARK]: 'newark',
+};
+
+const routeToApiDirectionAndRoutes = {
+    [ids.WTC]: {
+        direction: 'TO_NY',
+        routes: ['HOB_WTC', 'NWK_WTC'],
+    },
+    [ids.HOBOKEN]: {
+        direction: 'TO_NJ',
+        routes: ['HOB_WTC', 'HOB_33'],
+    },
+    [ids._33RD_ST]: {
+        direction: 'TO_NY',
+        routes: ['HOB_33', 'JSQ_33', 'JSQ_33_HOB'],
+    },
+    [ids.NEWARK]: {
+        direction: 'TO_NJ',
+        routes: ['NWK_WTC'],
+    },
+    [ids.JOURNAL_SQUARE]: {
+        direction: 'TO_NJ',
+        routes: ['JSQ_33', 'JSQ_33_HOB'],
+    }
+};
+
+function stationUrl(stationId) {
+    return `https://path.api.razza.dev/v1/stations/${stationToApiId[stationId]}/realtime`;
+}
+
+function getDeparturesFromJson(json, route, now) {
+    const {direction, routes} = routeToApiDirectionAndRoutes[route];
+    return json.upcomingTrains
+        .filter(train => direction == train.direction && routes.includes(train.route))
+        .map(train => (new Date(train.projectedArrival) - now) / 1000)
+        .filter(secs => secs >= 0);
+}
+
+function getDepartures(station, route) {
+    let now = new Date();
+    return fetch(stationUrl(station))
+        .then(resp => resp.json())
+        .then(json => ({
+            departures: getDeparturesFromJson(json, route, now),
+            method: ids.MRAZZA_API,
+        }));
+}
+
+module.exports = {
+    getDeparturesFromJson: getDeparturesFromJson,
+    getDepartures: getDepartures,
+};
+
+},{"./ids":3}],6:[function(require,module,exports){
 const ids = require('./ids');
 const luxon = require('luxon');
 
@@ -8958,7 +8958,7 @@ module.exports = {
     getDepartures: getDepartures,
 };
 
-},{"./ids":2,"luxon":5}],7:[function(require,module,exports){
+},{"./ids":3,"luxon":1}],7:[function(require,module,exports){
 "use strict";
 
 const luxon = require('luxon');
@@ -9096,7 +9096,7 @@ module.exports = {
     'getDepartures': getDepartures,
 };
 
-},{"./ids":2,"./scheduleData":9,"luxon":5}],8:[function(require,module,exports){
+},{"./ids":3,"./scheduleData":9,"luxon":1}],8:[function(require,module,exports){
 module.exports={"hobokenToBrookfieldFerry":{"weekday":["6:05 AM","6:20 AM","6:40 AM","7:00 AM","7:20 AM","7:40 AM","8:00 AM","8:20 AM","8:40 AM","9:00 AM","9:20 AM","9:40 AM","10:00 AM","10:20 AM","10:40 AM","11:00 AM","11:20 AM","11:40 AM","12:00 PM","12:20 PM","12:40 PM","1:00 PM","1:20 PM","1:40 PM","2:00 PM","2:20 PM","2:40 PM","3:00 PM","3:20 PM","3:40 PM","4:00 PM","4:20 PM","4:40 PM","5:00 PM","5:20 PM","5:40 PM","6:00 PM","6:20 PM","6:40 PM","7:00 PM"],"saturday":[],"sunday":[]},"pathHobokenToWtc":{"weekday":["6:14 AM","6:24 AM","6:34 AM","6:44 AM","6:54 AM","7:04 AM","7:12 AM","7:20 AM","7:28 AM","7:34 AM","7:43 AM","7:50 AM","7:58 AM","8:04 AM","8:10 AM","8:17 AM","8:23 AM","8:29 AM","8:35 AM","8:41 AM","8:47 AM","8:54 AM","9:00 AM","9:06 AM","9:12 AM","9:18 AM","9:24 AM","9:31 AM","9:38 AM","9:48 AM","9:58 AM","10:08 AM","10:18 AM","10:33 AM","10:48 AM","11:03 AM","11:18 AM","11:33 AM","11:48 AM","12:03 PM","12:18 PM","12:33 PM","12:48 PM","1:03 PM","1:18 PM","1:33 PM","1:48 PM","2:03 PM","2:18 PM","2:33 PM","2:45 PM","2:57 PM","3:09 PM","3:21 PM","3:33 PM","3:45 PM","3:57 PM","4:09 PM","4:18 PM","4:24 PM","4:30 PM","4:40 PM","4:48 PM","4:54 PM","5:00 PM","5:06 PM","5:12 PM","5:19 PM","5:25 PM","5:31 PM","5:37 PM","5:43 PM","5:50 PM","5:56 PM","6:02 PM","6:08 PM","6:14 PM","6:22 PM","6:34 PM","6:46 PM","6:58 PM","7:09 PM","7:21 PM","7:33 PM","7:45 PM","7:57 PM","8:09 PM","8:21 PM","8:33 PM","8:45 PM","8:57 PM","9:09 PM","9:21 PM","9:33 PM","9:45 PM","9:57 PM","10:11 PM","10:26 PM","10:41 PM","10:56 PM","11:11 PM"],"saturday":[],"sunday":[]},"pathWtcToHoboken":{"weekday":["5:58 AM","6:08 AM","6:18 AM","6:28 AM","6:38 AM","6:48 AM","6:58 AM","7:12 AM","7:19 AM","7:28 AM","7:34 AM","7:42 AM","7:48 AM","8:00 AM","8:06 AM","8:13 AM","8:19 AM","8:25 AM","8:31 AM","8:38 AM","8:44 AM","8:50 AM","8:56 AM","9:02 AM","9:09 AM","9:15 AM","9:22 AM","9:32 AM","9:42 AM","9:52 AM","10:02 AM","10:12 AM","10:27 AM","10:42 AM","10:57 AM","11:12 AM","11:27 AM","11:42 AM","11:57 AM","12:12 PM","12:27 PM","12:42 PM","12:57 PM","1:12 PM","1:27 PM","1:42 PM","1:57 PM","2:12 PM","2:27 PM","2:39 PM","2:51 PM","3:03 PM","3:15 PM","3:27 PM","3:39 PM","3:51 PM","4:03 PM","4:09 PM","4:15 PM","4:25 PM","4:32 PM","4:38 PM","4:44 PM","4:50 PM","4:56 PM","5:03 PM","5:09 PM","5:15 PM","5:21 PM","5:27 PM","5:34 PM","5:40 PM","5:46 PM","5:52 PM","5:58 PM","6:05 PM","6:12 PM","6:18 PM","6:24 PM","6:31 PM","6:39 PM","6:51 PM","7:03 PM","7:15 PM","7:27 PM","7:39 PM","7:51 PM","8:03 PM","8:15 PM","8:27 PM","8:39 PM","8:51 PM","9:03 PM","9:15 PM","9:27 PM","9:41 PM","9:56 PM","10:11 PM","10:26 PM","10:41 PM","10:56 PM"],"saturday":[],"sunday":[]},"pathHobokenTo33rd":{"weekday":["6:10 AM","6:20 AM","6:30 AM","6:40 AM","6:50 AM","7:00 AM","7:10 AM","7:20 AM","7:28 AM","7:36 AM","7:43 AM","7:50 AM","7:57 AM","8:04 AM","8:12 AM","8:19 AM","8:26 AM","8:33 AM","8:40 AM","8:48 AM","8:55 AM","9:02 AM","9:09 AM","9:16 AM","9:24 AM","9:32 AM","9:42 AM","9:52 AM","10:02 AM","10:12 AM","10:22 AM","10:32 AM","10:43 AM","10:58 AM","11:13 AM","11:28 AM","11:43 AM","11:58 AM","12:13 PM","12:28 PM","12:43 PM","12:58 PM","1:13 PM","1:28 PM","1:43 PM","1:58 PM","2:13 PM","2:28 PM","2:42 PM","2:52 PM","3:02 PM","3:12 PM","3:22 PM","3:32 PM","3:42 PM","3:52 PM","4:02 PM","4:12 PM","4:22 PM","4:32 PM","4:42 PM","4:50 PM","4:58 PM","5:06 PM","5:13 PM","5:20 PM","5:27 PM","5:34 PM","5:42 PM","5:49 PM","5:56 PM","6:03 PM","6:10 PM","6:18 PM","6:25 PM","6:32 PM","6:39 PM","6:46 PM","6:54 PM","7:02 PM","7:12 PM","7:22 PM","7:32 PM","7:42 PM","7:52 PM","8:02 PM","8:12 PM","8:22 PM","8:32 PM","8:42 PM","8:52 PM","9:02 PM","9:12 PM","9:25 PM","9:40 PM","9:55 PM","10:10 PM","10:25 PM","10:40 PM","12:23 AM","12:58 AM","1:38 AM","2:18 AM","2:58 AM","3:38 AM","4:18 AM","4:58 AM","5:38 AM","5:52 AM","11:13 PM","11:48 PM"],"saturday":["12:23 AM","12:58 AM","1:38 AM","2:18 AM","2:58 AM","3:38 AM","4:18 AM","4:58 AM","5:38 AM","6:13 AM","6:48 AM","7:23 AM","7:59 AM","8:14 AM","8:29 AM","8:44 AM","8:59 AM","9:14 AM","9:29 AM","9:44 AM","9:58 AM","10:13 AM","10:25 AM","10:37 AM","10:49 AM","11:01 AM","11:13 AM","11:25 AM","11:37 AM","11:49 AM","12:01 PM","12:13 PM","12:25 PM","12:37 PM","12:49 PM","1:01 PM","1:13 PM","1:25 PM","1:37 PM","1:49 PM","2:01 PM","2:13 PM","2:25 PM","2:37 PM","2:49 PM","3:01 PM","3:13 PM","3:25 PM","3:37 PM","3:49 PM","4:01 PM","4:13 PM","4:25 PM","4:37 PM","4:49 PM","5:01 PM","5:13 PM","5:25 PM","5:37 PM","5:49 PM","6:01 PM","6:13 PM","6:25 PM","6:37 PM","6:49 PM","7:01 PM","7:13 PM","7:25 PM","7:37 PM","7:49 PM","8:01 PM","8:13 PM","8:25 PM","8:37 PM","8:49 PM","9:01 PM","9:13 PM","9:25 PM","9:37 PM","9:49 PM","10:01 PM","10:13 PM","10:28 PM","10:43 PM","10:58 PM","11:13 PM","11:28 PM","11:48 PM","12:03 AM"],"sunday":["12:23 AM","12:38 AM","12:58 AM","1:18 AM","1:38 AM","1:58 AM","2:18 AM","2:58 AM","3:38 AM","4:18 AM","4:58 AM","5:38 AM","6:13 AM","6:48 AM","7:23 AM","7:58 AM","8:33 AM","9:08 AM","9:43 AM","9:58 AM","10:13 AM","10:25 AM","10:37 AM","10:49 AM","11:01 AM","11:13 AM","11:25 AM","11:37 AM","11:49 AM","12:01 PM","12:13 PM","12:25 PM","12:37 PM","12:49 PM","1:01 PM","1:13 PM","1:25 PM","1:37 PM","1:49 PM","2:01 PM","2:13 PM","2:25 PM","2:37 PM","2:49 PM","3:01 PM","3:13 PM","3:25 PM","3:37 PM","3:49 PM","4:01 PM","4:13 PM","4:25 PM","4:37 PM","4:49 PM","5:01 PM","5:13 PM","5:25 PM","5:37 PM","5:49 PM","6:01 PM","6:13 PM","6:25 PM","6:37 PM","6:49 PM","7:01 PM","7:13 PM","7:25 PM","7:37 PM","7:49 PM","8:01 PM","8:13 PM","8:28 PM","8:48 PM","9:08 PM","9:28 PM","9:48 PM","10:08 PM","10:28 PM","10:48 PM","11:13 PM","11:48 PM"]}}
 },{}],9:[function(require,module,exports){
 "use strict";
@@ -9165,4 +9165,4 @@ module.exports = {
     idsToWeekSchedule: idsToWeekSchedule,
 };
 
-},{"./ids":2,"./scheduleData.json":8}]},{},[3]);
+},{"./ids":3,"./scheduleData.json":8}]},{},[4]);
