@@ -1,23 +1,17 @@
-import logo from './logo.svg';
-import './App.css';
+import Row from './Row.js';
+import train from './images/train.png';
+import ferry from './images/ferry.png';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {/* Original color from PATH website is rgb(70, 156, 35).
+        * Lightened 50% using https://pinetools.com/lighten-color */}
+      <Row icon={train} row_title="PATH to WTC" background_color="#99e17c" />
+      {/* Original color from PATH website is rgb(240, 171, 67).
+        * Lightened 50% using https://pinetools.com/lighten-color */}
+      <Row icon={train} row_title="PATH to 33rd" background_color="#f7d5a1" />
+      <Row icon={ferry} row_title="Ferry to Brookfield" background_color="#d0e0e3" />
     </div>
   );
 }

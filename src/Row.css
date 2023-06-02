@@ -5,21 +5,6 @@
     display: flex;
     height: 4.35cm;
 }
-#ferry-to-brookfield-row {
-    background-color: #d0e0e3ff;
-}
-/* Original color from PATH website is rgb(70, 156, 35).
- * Lightened 50% using https://pinetools.com/lighten-color
- */
-#path-to-wtc-row {
-    background-color: #99e17c;
-}
-/* Original color from PATH website is rgb(240, 171, 67).
- * Lightened 50% using https://pinetools.com/lighten-color
- */
-#path-to-33rd-row {
-    background-color: #f7d5a1;
-}
 .row-title {
     margin: 8pt;
     font-size: 24pt;
