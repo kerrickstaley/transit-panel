@@ -1,4 +1,5 @@
 import Row from './Row.js';
+import FullscreenButton from './FullscreenButton.js';
 import ids from './ids.js';
 import schedule from './schedule.js';
 import train from './images/train.png';
@@ -65,6 +66,7 @@ function App() {
         * Lightened 50% using https://pinetools.com/lighten-color */}
       <Row row_title="PATH to 33rd" get_leave_sec={getPathTo33rdLeaveSec} icon={train} background_color="#f7d5a1" />
       <Row row_title="Ferry to Brookfield" get_leave_sec={getBrookfieldFerryLeaveSec} icon={ferry} background_color="#d0e0e3" />
+      <FullscreenButton />
     </div>
   );
 }
