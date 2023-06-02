@@ -20,17 +20,17 @@ function isApi(method) {
     return method == MRAZZA_API || method == RIDEPATH_API;
 }
 
-module.exports = {
-    HOBOKEN: HOBOKEN,
-    NEWPORT: NEWPORT,
-    _33RD_ST: _33RD_ST,
-    WTC: WTC,
-    JOURNAL_SQUARE: JOURNAL_SQUARE,
-    NEWARK: NEWARK,
-    HOBOKEN_FERRY: HOBOKEN_FERRY,
-    HOBOKEN_TO_BROOKFIELD_FERRY: HOBOKEN_TO_BROOKFIELD_FERRY,
-    SCHEDULE: SCHEDULE,
-    MRAZZA_API: MRAZZA_API,
-    RIDEPATH_API: RIDEPATH_API,
-    isApi: isApi,
+export default {
+    HOBOKEN,
+    NEWPORT,
+    _33RD_ST,
+    WTC,
+    JOURNAL_SQUARE,
+    NEWARK,
+    HOBOKEN_FERRY,
+    HOBOKEN_TO_BROOKFIELD_FERRY,
+    SCHEDULE,
+    MRAZZA_API,
+    RIDEPATH_API,
+    isApi,
 };

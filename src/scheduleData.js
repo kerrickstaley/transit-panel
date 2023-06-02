@@ -1,8 +1,8 @@
 "use strict";
 
 // TODO: why can't I require scheduleData.json5 using the instructions at https://json5.org/?
-const data = require('./scheduleData.json');
-const ids = require('./ids');
+import data from './scheduleData.json';
+import ids from './ids.js';
 
 const hobokenToBrookfieldFerryWeekSchedule = [
     data.hobokenToBrookfieldFerry.weekday,
@@ -57,9 +57,9 @@ const idsToWeekSchedule = {
     },
 };
 
-module.exports = {
-    hobokenToBrookfieldFerryWeekSchedule: hobokenToBrookfieldFerryWeekSchedule,
-    pathHobokenToWtcWeekSchedule: pathHobokenToWtcWeekSchedule,
-    pathHobokenTo33rdWeekSchedule: pathHobokenTo33rdWeekSchedule,
-    idsToWeekSchedule: idsToWeekSchedule,
+export default {
+    hobokenToBrookfieldFerryWeekSchedule,
+    pathHobokenToWtcWeekSchedule,
+    pathHobokenTo33rdWeekSchedule,
+    idsToWeekSchedule,
 };

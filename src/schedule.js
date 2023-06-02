@@ -1,8 +1,8 @@
 "use strict";
 
+import scheduleData from './scheduleData.js';
+import ids from './ids.js';
 const luxon = require('luxon');
-const scheduleData = require('./scheduleData');
-const ids = require('./ids');
 
 // TODO remove this redundant defintion, this is terrible
 const METHOD_SCHEDULE = 'SCHEDULE';
@@ -127,10 +127,10 @@ function getDepartures(station, route) {
     });
 }
 
-module.exports = {
-    'getSecsUntilNextDeparturesFromWeekSchedule': getSecsUntilNextDeparturesFromWeekSchedule,
-    'getSecUntilDepartures': getSecUntilDepartures,
-    'getLeaveSecFromWeekSchedule': getLeaveSecFromWeekSchedule,
-    'getDeparturesFromTime': getDeparturesFromTime,
-    'getDepartures': getDepartures,
+export default {
+    getSecsUntilNextDeparturesFromWeekSchedule,
+    getSecUntilDepartures,
+    getLeaveSecFromWeekSchedule,
+    getDeparturesFromTime,
+    getDepartures,
 };

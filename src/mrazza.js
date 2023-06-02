@@ -1,4 +1,4 @@
-const ids = require('./ids');
+import ids from './ids.js';
 
 // This fetches from mrazza's API; see https://github.com/mrazza/path-data
 
@@ -56,7 +56,7 @@ function getDepartures(station, route) {
         }));
 }
 
-module.exports = {
-    getDeparturesFromJson: getDeparturesFromJson,
-    getDepartures: getDepartures,
+export default {
+    getDeparturesFromJson,
+    getDepartures,
 };
