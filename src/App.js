@@ -8,7 +8,7 @@ import ferry from './images/ferry.png';
 import mrazza from './mrazza.js';
 
 const walkTimeFromAptDoorToPathSec = 10 * 60;
-const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
+const walkTimeFromAptDoorToFerrySec = 10 * 60;
 const walkTimeToHobokenRailSec = 11 * 60;
 
 function getLeaveSecGeneric(station, route, walkSec, getDeparturesFuncs) {
