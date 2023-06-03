@@ -1,7 +1,6 @@
 "use strict";
 
-// TODO: why can't I require scheduleData.json5 using the instructions at https://json5.org/?
-import data from './scheduleData.json';
+import data from './scheduleData.json5';
 import ids from './ids.js';
 
 const hobokenToBrookfieldFerryWeekSchedule = [
