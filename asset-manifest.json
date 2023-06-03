@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/static/css/main.6c9e2cd8.css",
-    "main.js": "/static/js/main.bb3209ff.js",
+    "main.js": "/static/js/main.c8a53ccd.js",
     "static/js/679.2340ea7d.chunk.js": "/static/js/679.2340ea7d.chunk.js",
     "static/media/train.png": "/static/media/train.be61e292f4f8059ae849.png",
     "static/media/ferry.png": "/static/media/ferry.75a29c4d9d54d972f1c6.png",
     "index.html": "/index.html",
     "main.6c9e2cd8.css.map": "/static/css/main.6c9e2cd8.css.map",
-    "main.bb3209ff.js.map": "/static/js/main.bb3209ff.js.map",
+    "main.c8a53ccd.js.map": "/static/js/main.c8a53ccd.js.map",
     "679.2340ea7d.chunk.js.map": "/static/js/679.2340ea7d.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6c9e2cd8.css",
-    "static/js/main.bb3209ff.js"
+    "static/js/main.c8a53ccd.js"
   ]
 }
