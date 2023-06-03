@@ -2,7 +2,8 @@ import Row from './Row.js';
 import FullscreenButton from './FullscreenButton.js';
 import ids from './ids.js';
 import schedule from './schedule.js';
-import train from './images/train.png';
+import below_grade_train from './images/below_grade_train.png';
+import at_grade_train from './images/at_grade_train.png';
 import ferry from './images/ferry.png';
 import mrazza from './mrazza.js';
 
@@ -66,13 +67,13 @@ function App() {
     <div>
       {/* Original color from PATH website is rgb(70, 156, 35).
         * Lightened 50% using https://pinetools.com/lighten-color */}
-      <Row rowTitle="PATH to WTC" getLeaveSec={getWtcPathLeaveSec} icon={train} backgroundColor="#99e17c" />
+      <Row rowTitle="PATH to WTC" getLeaveSec={getWtcPathLeaveSec} icon={below_grade_train} backgroundColor="#99e17c" />
       {/* Original color from PATH website is rgb(240, 171, 67).
         * Lightened 50% using https://pinetools.com/lighten-color */}
-      <Row rowTitle="PATH to 33rd" getLeaveSec={getPathTo33rdLeaveSec} icon={train} backgroundColor="#f7d5a1" />
+      <Row rowTitle="PATH to 33rd" getLeaveSec={getPathTo33rdLeaveSec} icon={below_grade_train} backgroundColor="#f7d5a1" />
       <Row rowTitle="Ferry to Brookfield" getLeaveSec={getBrookfieldFerryLeaveSec} icon={ferry} backgroundColor="#d0e0e3" />
       {/* Original color is #e66859. Lightened 30% using https://pinetools.com/lighten-color */}
-      <Row rowTitle="BNTNM to Newark" getLeaveSec={getBntnmLeaveSec} icon={train} backgroundColor="#ed958a" />
+      <Row rowTitle="BNTNM to Newark" getLeaveSec={getBntnmLeaveSec} icon={at_grade_train} backgroundColor="#ed958a" />
       <FullscreenButton />
     </div>
   );
