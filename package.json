@@ -1,5 +1,6 @@
 {
   "name": "transit-panel",
+  "homepage": "https://www.kerrickstaley.com/transit-panel/",
   "devDependencies": {
     "jest": "^29.3.1",
     "json5-loader": "^4.0.1",
