@@ -20,6 +20,14 @@ function isApi(method) {
     return method == MRAZZA_API || method == RIDEPATH_API;
 }
 
+function methodAbbrev(method) {
+    return {
+        [SCHEDULE]: 'SCH',
+        [MRAZZA_API]: 'MAPI',
+        [RIDEPATH_API]: 'RAPI',
+    }[method];
+}
+
 export default {
     HOBOKEN,
     NEWPORT,
@@ -33,4 +41,5 @@ export default {
     MRAZZA_API,
     RIDEPATH_API,
     isApi,
+    methodAbbrev,
 };

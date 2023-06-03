@@ -9,6 +9,7 @@ export default function Row(props) {
 
   const [leave_min, set_leave_min] = useState('?');
   const [visible, set_visible] = useState(true);
+  const [method, setMethod] = useState('?');
 
   let display_leave_min_loop_timeout_id = null;
   function display_leave_min_loop() {
@@ -16,6 +17,7 @@ export default function Row(props) {
     get_leave_sec().then(({leaveSec, method}) => {
         set_leave_min(Math.floor(leaveSec / sec_per_min));
         set_visible(leaveSec < maxLeaveSecToShowOption);
+        setMethod(method);
 
         let sleep_sec = ((leaveSec % sec_per_min) + sec_per_min) % sec_per_min;
         if (method == ids.SCHEDULE) {
@@ -48,6 +50,6 @@ export default function Row(props) {
       </div>
       <div className="leave-in-min">{leave_min}</div>
       <div className="spacer"></div>
-      <div className="method">?</div>
+      <div className="method">{ids.methodAbbrev(method)}</div>
   </div>;
 }
