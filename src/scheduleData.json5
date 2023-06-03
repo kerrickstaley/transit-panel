@@ -559,4 +559,24 @@
             '11:48 PM',
         ],
     },
+    // https://content.njtransit.com/sites/default/files/pdfs/rail/2023/04/230003/bntn.pdf
+    // Can extract from GTFS feed
+    // This route runs on weekdays too, but it was confusing to extract the weekday data from the
+    // GTFS data (I only got a subset of the departure times listed in the PDF, maybe because the
+    // PDF lists itineraries that involve multiple routes w/ transfers between routes?). I
+    // currently only take this route on weekends anyway.
+    njTransitBntnm: {
+        weekend: [
+            '01:15 AM',
+            '06:08 AM',
+            '08:08 AM',
+            '10:08 AM',
+            '12:08 PM',
+            '02:08 PM',
+            '04:08 PM',
+            '06:08 PM',
+            '08:08 PM',
+            '11:08 PM',
+        ],
+    },
 }

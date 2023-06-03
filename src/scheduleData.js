@@ -43,6 +43,16 @@ const pathHobokenTo33rdWeekSchedule = [
     data.pathHobokenTo33rd.sunday,
 ];
 
+const njTransitBntnmWeekSchedule = [
+    [],
+    [],
+    [],
+    [],
+    [],
+    data.njTransitBntnm.weekend,
+    data.njTransitBntnm.weekend,
+];
+
 const idsToWeekSchedule = {
     [ids.HOBOKEN]: {
         [ids.WTC]: pathHobokenToWtcWeekSchedule,
@@ -53,6 +63,9 @@ const idsToWeekSchedule = {
     },
     [ids.HOBOKEN_FERRY]: {
         [ids.HOBOKEN_TO_BROOKFIELD_FERRY]: hobokenToBrookfieldFerryWeekSchedule,
+    },
+    [ids.HOBOKEN_NJ_TRANSIT_RAIL]: {
+        [ids.NJ_TRANSIT_BNTNM]: njTransitBntnmWeekSchedule,
     },
 };
 

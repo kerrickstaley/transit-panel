@@ -8,6 +8,7 @@ import mrazza from './mrazza.js';
 
 const walkTimeFromAptDoorToPathSec = 10 * 60;
 const walkTimeFromAptDoorToFerrySec = 9.5 * 60;
+const walkTimeToHobokenRailSec = 11 * 60;
 
 function getLeaveSecGeneric(station, route, walkSec, getDeparturesFuncs) {
     let promises = getDeparturesFuncs.map(f => f(station, route));
@@ -56,6 +57,10 @@ function getBrookfieldFerryLeaveSec() {
     return getLeaveSec(ids.HOBOKEN_FERRY, ids.HOBOKEN_TO_BROOKFIELD_FERRY, walkTimeFromAptDoorToFerrySec);
 }
 
+function getBntnmLeaveSec() {
+    return getLeaveSecGeneric(ids.HOBOKEN_NJ_TRANSIT_RAIL, ids.NJ_TRANSIT_BNTNM, walkTimeToHobokenRailSec, [schedule.getDepartures]);
+}
+
 function App() {
   return (
     <div>
@@ -66,6 +71,8 @@ function App() {
         * Lightened 50% using https://pinetools.com/lighten-color */}
       <Row rowTitle="PATH to 33rd" getLeaveSec={getPathTo33rdLeaveSec} icon={train} backgroundColor="#f7d5a1" />
       <Row rowTitle="Ferry to Brookfield" getLeaveSec={getBrookfieldFerryLeaveSec} icon={ferry} backgroundColor="#d0e0e3" />
+      {/* Original color is #e66859. Lightened 30% using https://pinetools.com/lighten-color */}
+      <Row rowTitle="BNTNM to Newark" getLeaveSec={getBntnmLeaveSec} icon={train} backgroundColor="#ed958a" />
       <FullscreenButton />
     </div>
   );
