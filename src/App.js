@@ -61,11 +61,11 @@ function App() {
     <div>
       {/* Original color from PATH website is rgb(70, 156, 35).
         * Lightened 50% using https://pinetools.com/lighten-color */}
-      <Row row_title="PATH to WTC" get_leave_sec={getWtcPathLeaveSec} icon={train} background_color="#99e17c" />
+      <Row rowTitle="PATH to WTC" getLeaveSec={getWtcPathLeaveSec} icon={train} backgroundColor="#99e17c" />
       {/* Original color from PATH website is rgb(240, 171, 67).
         * Lightened 50% using https://pinetools.com/lighten-color */}
-      <Row row_title="PATH to 33rd" get_leave_sec={getPathTo33rdLeaveSec} icon={train} background_color="#f7d5a1" />
-      <Row row_title="Ferry to Brookfield" get_leave_sec={getBrookfieldFerryLeaveSec} icon={ferry} background_color="#d0e0e3" />
+      <Row rowTitle="PATH to 33rd" getLeaveSec={getPathTo33rdLeaveSec} icon={train} backgroundColor="#f7d5a1" />
+      <Row rowTitle="Ferry to Brookfield" getLeaveSec={getBrookfieldFerryLeaveSec} icon={ferry} backgroundColor="#d0e0e3" />
       <FullscreenButton />
     </div>
   );

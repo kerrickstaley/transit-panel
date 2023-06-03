@@ -5,50 +5,50 @@ import './Row.css';
 const maxLeaveSecToShowOption = 90 * 60;
 
 export default function Row(props) {
-  const {row_title, icon, background_color, get_leave_sec} = props;
+  const {rowTitle, icon, backgroundColor, getLeaveSec} = props;
 
-  const [leave_min, set_leave_min] = useState('?');
-  const [visible, set_visible] = useState(true);
+  const [leaveMin, setLeaveMin] = useState('?');
+  const [visible, setVisible] = useState(true);
   const [method, setMethod] = useState('?');
 
-  let display_leave_min_loop_timeout_id = null;
-  function display_leave_min_loop() {
-    const sec_per_min = 60;  // Can set this to 1 to see the value update every second for testing.
-    get_leave_sec().then(({leaveSec, method}) => {
-        set_leave_min(Math.floor(leaveSec / sec_per_min));
-        set_visible(leaveSec < maxLeaveSecToShowOption);
+  let displayLeaveMinLoopTimeoutId = null;
+  function displayLeaveMinLoop() {
+    const secPerMin = 60;  // Can set this to 1 to see the value update every second for testing.
+    getLeaveSec().then(({leaveSec, method}) => {
+        setLeaveMin(Math.floor(leaveSec / secPerMin));
+        setVisible(leaveSec < maxLeaveSecToShowOption);
         setMethod(method);
 
-        let sleep_sec = ((leaveSec % sec_per_min) + sec_per_min) % sec_per_min;
+        let sleepSec = ((leaveSec % secPerMin) + secPerMin) % secPerMin;
         if (method == ids.SCHEDULE) {
             // + .1 is a little hack to make sure that the minute has definitely rolled over by the time we get there.
-            sleep_sec += .1;
+            sleepSec += .1;
         } else if (ids.isApi(method)) {
-            sleep_sec = Math.min(30, sleep_sec + 5);
+            sleepSec = Math.min(30, sleepSec + 5);
         } else {
             console.log('unreachable');
             return;
         }
-        sleep_sec = Math.max(10, sleep_sec);  // Avoid hitting the API too much
-        display_leave_min_loop_timeout_id = setTimeout(
-          display_leave_min_loop, sleep_sec * 1000);
+        sleepSec = Math.max(10, sleepSec);  // Avoid hitting the API too much
+        displayLeaveMinLoopTimeoutId = setTimeout(
+          displayLeaveMinLoop, sleepSec * 1000);
     });
   }
 
   useEffect(() => {
-    display_leave_min_loop();
+    displayLeaveMinLoop();
 
     return function cleanup() {
-      clearTimeout(display_leave_min_loop_timeout_id);
+      clearTimeout(displayLeaveMinLoopTimeoutId);
     };
   }, []);
 
-  return <div className="row" style={{backgroundColor: background_color, display: visible ? '' : 'none'}}>
+  return <div className="row" style={{backgroundColor: backgroundColor, display: visible ? '' : 'none'}}>
       <div className="row-title-and-icon">
-          <div className="row-title">{row_title}</div>
+          <div className="row-title">{rowTitle}</div>
           <img src={icon} />
       </div>
-      <div className="leave-in-min">{leave_min}</div>
+      <div className="leave-in-min">{leaveMin}</div>
       <div className="spacer"></div>
       <div className="method">{ids.methodAbbrev(method)}</div>
   </div>;
