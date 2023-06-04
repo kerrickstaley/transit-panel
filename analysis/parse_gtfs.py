@@ -6,7 +6,7 @@ import dateutil
 import datetime as dt
 
 # %%
-# Configurable options
+# Configurable options for BNTNM train route
 zip_path = Path(os.environ['HOME']) / 'Downloads/rail_data.zip'
 dist_units = 'mi'
 route_short_name = 'BNTNM'
@@ -16,23 +16,47 @@ direction_id = 1
 days_of_week = [5]  # Saturday
 
 # %%
+# Configurable options for 126 bus route
+zip_path = Path(os.environ['HOME']) / 'Downloads/bus_data.zip'
+dist_units = 'mi'
+route_short_name = '126'
+origin_stop_name = 'WASHINGTON ST AT 3RD ST'
+destination_stop_name = None
+direction_id = 1
+days_of_week = [5]  # Saturday
+
+# %%
+feed = gtfs_kit.read_feed(zip_path, dist_units=dist_units)
+
+# %%
 week = feed.get_first_week()
 dates = [week[i] for i in days_of_week]
 dates
 
 route_id = feed.routes.loc[feed.routes['route_short_name'] == route_short_name, 'route_id'].iat[0]
-origin_stop_id = feed.stops.loc[feed.stops.stop_name == origin_stop_name, 'stop_id'].iat[0]
-destination_stop_id = feed.stops.loc[feed.stops.stop_name == destination_stop_name, 'stop_id'].iat[0]
 
-timetable = feed.build_route_timetable(route_id, dates)
+stop_ids = [
+    feed.stops.loc[feed.stops.stop_name == origin_stop_name, 'stop_id'].iat[0],
+]
 
-origin_timetable = timetable[(timetable.stop_id == origin_stop_id) & (timetable.direction_id == direction_id)].copy()
-destination_timetable = timetable[(timetable.stop_id == destination_stop_id) & (timetable.direction_id == direction_id)].copy()
+if destination_stop_name is not None:
+    stop_ids.append(
+        feed.stops.loc[feed.stops.stop_name == destination_stop_name, 'stop_id'].iat[0])
+
+route_timetable = feed.build_route_timetable(route_id, dates)
+
+timetables = [
+    route_timetable[(route_timetable.stop_id == stop_id) & (route_timetable.direction_id == direction_id)].copy()
+    for stop_id in stop_ids]
 
 drop_cols = ['route_id', 'stop_id', 'direction_id', 'shape_id', 'pickup_type', 'drop_off_type', 'shape_dist_traveled']
-for sub_timetable in [origin_timetable, destination_timetable]:
-    sub_timetable.drop(drop_cols, axis=1, inplace=True)
-    sub_timetable.reset_index(inplace=True, drop=True)
+for timetable in timetables:
+    timetable.drop(drop_cols, axis=1, inplace=True)
+    timetable.reset_index(inplace=True, drop=True)
+
+# %%
+# Finding departure times from origin stop that go to destination stop
+origin_timetable, destination_timetable = timetables
 
 on = ['trip_id', 'service_id', 'trip_headsign', 'date']
 merged = origin_timetable.merge(destination_timetable, left_on=on, right_on=on, suffixes=['_origin', '_destination']).copy()
@@ -58,14 +82,14 @@ for datetime in datetimes:
 
 # %%
 # Finding stops
-feed.stops[feed.stops.stop_name.str.contains('BROAD')]
+feed.stops[feed.stops.stop_name.str.contains('WASHINGTON.*3')]
 
 # %%
 # Listing all routes
-feed.routes
+feed.routes[feed.routes.route_short_name.str.contains('126')]
 
 # %%
-# All stops in timetable
-feed.stops[feed.stops.stop_id.isin(timetable.stop_id.unique())]
+# All stops for route in timetable
+feed.stops[feed.stops.stop_id.isin(route_timetable.stop_id.unique())]
 
 # %%
