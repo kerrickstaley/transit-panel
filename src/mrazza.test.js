@@ -1,5 +1,5 @@
-const mrazza = require('./mrazza');
-const ids = require('./ids');
+import mrazza from './mrazza.js';
+import ids from './ids.js';
 const fs = require('fs');
 
 const json_hoboken_1 = JSON.parse(fs.readFileSync('test_data/mrazza_hoboken_1.json'));

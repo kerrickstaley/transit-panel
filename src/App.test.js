@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('renders fullscreen button', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const fullscreenButton = screen.getByText(/Click to go fullscreen/i);
+  expect(fullscreenButton).toBeInTheDocument();
 });

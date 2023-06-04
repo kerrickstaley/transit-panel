@@ -1,5 +1,5 @@
-const schedule = require('./schedule');
-const ids = require('./ids');
+import schedule from './schedule.js';
+import ids from './ids.js';
 
 test('getSecUntilDepartures', () => {
     let now = new Date(1668481604000);
