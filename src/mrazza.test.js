@@ -1,14 +1,13 @@
 import mrazza from './mrazza.js';
-import ids from './ids.js';
 const fs = require('fs');
 
 const json_hoboken_1 = JSON.parse(fs.readFileSync('test_data/mrazza_hoboken_1.json'));
 const json_wtc_1 = JSON.parse(fs.readFileSync('test_data/mrazza_wtc_1.json'));
 
 test('getDeparturesFromJson', () => {
-    let now1 = new Date('2022-12-19T13:45:00Z');
-    expect(mrazza.getDeparturesFromJson(json_hoboken_1, ids._33RD_ST, now1)).toStrictEqual([600, 1020]);
+    expect(mrazza.getDeparturesFromJson(json_hoboken_1, 'thirty_third_street'))
+           .toStrictEqual([new Date('2022-12-19T13:55:00.000Z'), new Date('2022-12-19T14:02:00.000Z')]);
 
-    let now2 = new Date('2022-12-19T23:49:00Z');
-    expect(mrazza.getDeparturesFromJson(json_wtc_1, ids.NEWARK, now2)).toStrictEqual([240, 540]);
+    expect(mrazza.getDeparturesFromJson(json_wtc_1, 'newark'))
+           .toStrictEqual([new Date('2022-12-19T23:48:00.000Z'), new Date('2022-12-19T23:53:00.000Z'), new Date('2022-12-19T23:58:00.000Z')]);
 });
