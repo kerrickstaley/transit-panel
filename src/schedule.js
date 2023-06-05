@@ -1,5 +1,8 @@
 "use strict";
 
+// TODO: We don't even attempt to handle timezones. The app basically doesn't work outside the
+// Eastern timezone.
+
 const luxon = require('luxon');
 
 // Given a Luxon DateTime and a string like '8:30 AM', return a Luxon DateTime with the same date as
