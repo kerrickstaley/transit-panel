@@ -5,6 +5,8 @@ import mrazza from './mrazza.js';
 import util from './util.js';
 import schedule from './schedule.js';
 
+// TODO this module should use camelCase identifiers for stations for consistency with the rest of
+// the project
 export default function PathRow(props) {
     let {origin, route, walkSec} = props;
     let routeSchedule = scheduleData[origin][route];
