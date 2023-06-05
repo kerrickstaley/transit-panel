@@ -2,7 +2,7 @@
   "name": "transit-panel",
   "homepage": "https://www.kerrickstaley.com/transit-panel/",
   "devDependencies": {
-    "jest": "^29.3.1",
+    "jest": "^29.5.0",
     "json5-loader": "^4.0.1",
     "luxon": "^3.1.0",
     "react-app-rewired": "^2.2.1"
