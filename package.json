@@ -11,6 +11,7 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "TZ=America/New_York react-app-rewired test --watchAll=false",
+    "test:debug": "TZ=America/New_York react-app-rewired --inspect-brk test --runInBand --no-cache",
     "eject": "react-scripts eject"
   },
   "dependencies": {
