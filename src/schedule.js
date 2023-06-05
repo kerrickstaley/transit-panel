@@ -172,7 +172,32 @@ function getNextDeparturesFromSchedule(schedule, date, n = 1) {
     return ret;
 }
 
+// Returns a new copy, does not modify the original.
+function sortSingleDaySchedule(singleDaySchedule) {
+    const DateTime = luxon.DateTime;
+    let toDateTime = timeStr => DateTime.fromFormat('2023-01-01 ' + timeStr, 'yyyy-MM-dd h:mm a');
+    return singleDaySchedule.toSorted((a, b) => {
+        let aDateTime = toDateTime(a);
+        let bDateTime = toDateTime(b);
+        if (aDateTime == bDateTime) {
+            return 0;
+        }
+        return aDateTime < bDateTime ? -1 : 1;
+    });
+}
+
+// Returns a new copy, does not modify the original.
+function sortSchedule(schedule) {
+    let ret = {};
+    Object.keys(schedule).forEach((key, _) => {
+        ret[key] = sortSingleDaySchedule(schedule[key]);
+    });
+    return ret;
+}
+
+// For this function, schedule does not need to be sorted; we will sort it.
 function pumpLeaveUpdatesFromSchedule(schedule, walkSec) {
+    schedule = sortSchedule(schedule);
     return setLeaveUpdates => {
         let loopTimeoutId = null;
 
@@ -197,7 +222,6 @@ function pumpLeaveUpdatesFromSchedule(schedule, walkSec) {
         return cancel;
     };
 };
-
 
 export default {
     getSecsUntilNextDeparturesFromWeekSchedule,
