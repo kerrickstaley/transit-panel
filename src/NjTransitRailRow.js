@@ -7,7 +7,7 @@ export default function NjTransitRailRow(props) {
     let {origin, routeName, walkSec} = props;
     let routeSchedule = scheduleData[origin][routeName];
     let retProps = {
-        pumpLeaveUpdates: schedule.pumpLeaveUpdatesFromSchedule(routeSchedule, walkSec),
+        pumpLeaveUpdates: schedule.pumpLeaveUpdates(routeSchedule, walkSec),
         rowTitle: props.rowTitle ?? routeName.toUpperCase(),
         icon: props.icon ?? icon,
         backgroundColor: props.backgroundColor ?? backgroundColorData[routeName],

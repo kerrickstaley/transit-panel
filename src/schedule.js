@@ -196,7 +196,7 @@ function sortSchedule(schedule) {
 }
 
 // For this function, schedule does not need to be sorted; we will sort it.
-function pumpLeaveUpdatesFromSchedule(schedule, walkSec) {
+function pumpLeaveUpdates(schedule, walkSec) {
     schedule = sortSchedule(schedule);
     return setLeaveUpdates => {
         let loopTimeoutId = null;
@@ -230,5 +230,5 @@ export default {
     getDeparturesFromTime,
     getDepartures,
     getNextDeparturesFromSchedule,
-    pumpLeaveUpdatesFromSchedule,
+    pumpLeaveUpdates,
 };

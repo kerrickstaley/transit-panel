@@ -10,7 +10,7 @@ export default function PathRow(props) {
     let routeSchedule = scheduleData[origin][route];
     let pumpLeaveUpdates = util.pumpLeaveUpdatesWithFallback([
         mrazza.pumpLeaveUpdates(origin, route, walkSec),
-        schedule.pumpLeaveUpdatesFromSchedule(routeSchedule, walkSec),
+        schedule.pumpLeaveUpdates(routeSchedule, walkSec),
     ]);
     let retProps = {
         pumpLeaveUpdates,
