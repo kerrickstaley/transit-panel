@@ -10,33 +10,48 @@ export default function Row(props) {
   const [visible, setVisible] = useState(true);
   const [method, setMethod] = useState('?');
 
-  function handleLeaveUpdates(leaveUpdates) {
-    let now = new Date();
+  let displayLeaveUpdatesLoopTimeoutId = null;
+  function displayLeaveUpdates(leaveUpdates) {
+    function loop() {
+      let now = new Date();
 
-    let nextLeaveUpdate = null;
-    for (let leaveUpdate of leaveUpdates) {
-      if (leaveUpdate.leaveTime >= now) {
-        nextLeaveUpdate = leaveUpdate;
-        break;
+      let nextLeaveUpdate = null;
+      for (let leaveUpdate of leaveUpdates) {
+        if (leaveUpdate.leaveTime >= now) {
+          nextLeaveUpdate = leaveUpdate;
+          break;
+        }
       }
+
+      if (nextLeaveUpdate === null) {
+        setLeaveMin('?');
+        setMethod('?');
+        setVisible(true);
+        displayLeaveUpdatesLoopTimeoutId = null;
+        return;
+      }
+
+      let leaveSec = (nextLeaveUpdate.leaveTime - now) / 1000;
+      let leaveMin = Math.floor(leaveSec / 60);
+      setLeaveMin(leaveMin);
+      setMethod(nextLeaveUpdate.methodAbbrev);
+      setVisible(leaveSec <= maxLeaveSecToShowOption);
+
+      displayLeaveUpdatesLoopTimeoutId = setTimeout(
+        // Add 0.1 seconds so that the timer will definitely roll over by the time we get there.
+        loop, (leaveSec % 60 + 0.1) * 1000);
     }
 
-    if (nextLeaveUpdate === null) {
-      setLeaveMin('?');
-      setMethod('?');
-      setVisible(true);
-      return;
-    }
-
-    let leaveSec = (nextLeaveUpdate.leaveTime - now) / 1000;
-    let leaveMin = Math.floor(leaveSec / 60);
-    setLeaveMin(leaveMin);
-    setMethod(nextLeaveUpdate.methodAbbrev);
-    setVisible(leaveSec <= maxLeaveSecToShowOption); 
-    // TODO handle updating leaveMin even if handleLeaveUpdates doesn't get called
+    loop();
   }
 
-  useEffect(() => pumpLeaveUpdates(handleLeaveUpdates), []);
+  useEffect(() => {
+    let cancelPump = pumpLeaveUpdates(displayLeaveUpdates);
+    return function cancel() {
+      cancelPump();
+      clearTimeout(displayLeaveUpdatesLoopTimeoutId);
+    };
+  }, []);
 
   return <div className="row" style={{backgroundColor: backgroundColor, display: visible ? '' : 'none'}}>
       <div className="row-title-and-icon">
