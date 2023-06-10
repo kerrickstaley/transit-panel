@@ -109,7 +109,7 @@ function pumpLeaveUpdates(schedule, walkSec) {
 
             setLeaveUpdates(updates);
             // TODO this can be more efficient
-            loopTimeoutId = setTimeout(loop, 60 * 1000);
+            loopTimeoutId = setTimeout(loop, 120 * 1000);
         }
 
         function cancel() {
