@@ -39,7 +39,7 @@ function getDaySchedule(schedule, dayIdx) {
         return schedule[weekdayOrWeekend];
     }
     
-    throw new Error(`Could not find day with index ${dayIdx} in ${schedule}`);
+    throw new Error(`Could not find day with index ${dayIdx} in ${JSON.stringify(schedule)}`);
 }
 
 // Get next n departures that are >= the given date from the given schedule

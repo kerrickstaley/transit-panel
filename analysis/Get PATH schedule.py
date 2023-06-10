@@ -105,6 +105,13 @@ for day, tables in day_tables.items():
             schedules.setdefault(route_name, {}).setdefault(station, {})[day] = list(table[col])
 
 # %%
+# Add empty lists to schedules so we can distinguish between "day has no data" and "we typoed something"
+for route_data in schedules.values():
+    for origin_data in route_data.values():
+        for day in ['weekday', 'saturday', 'sunday']:
+            origin_data.setdefault(day, [])
+
+# %%
 # Sanity check
 schedule_sizes = copy.deepcopy(schedules)
 for route in schedule_sizes.values():
