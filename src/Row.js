@@ -12,6 +12,9 @@ export default function Row(props) {
 
   let displayLeaveUpdatesLoopTimeoutId = null;
   function displayLeaveUpdates(leaveUpdates) {
+    clearTimeout(displayLeaveUpdatesLoopTimeoutId);
+    displayLeaveUpdatesLoopTimeoutId = null;
+
     function loop() {
       let now = new Date();
 
