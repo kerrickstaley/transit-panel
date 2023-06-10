@@ -1,3 +1,5 @@
 node_modules
 build
 .ipynb_checkpoints
+node_modules
+*.ipynb
