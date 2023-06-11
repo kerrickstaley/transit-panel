@@ -72,9 +72,10 @@ function getNextDeparturesFromSchedule(schedule, date, n = 1) {
 
 // Returns a new copy, does not modify the original.
 function sortSingleDaySchedule(singleDaySchedule) {
+    let ret = [...singleDaySchedule];
     const DateTime = luxon.DateTime;
     let toDateTime = timeStr => DateTime.fromFormat('2023-01-01 ' + timeStr, 'yyyy-MM-dd h:mm a');
-    return singleDaySchedule.toSorted((a, b) => {
+    ret.sort((a, b) => {
         let aDateTime = toDateTime(a);
         let bDateTime = toDateTime(b);
         if (aDateTime == bDateTime) {
@@ -82,6 +83,7 @@ function sortSingleDaySchedule(singleDaySchedule) {
         }
         return aDateTime < bDateTime ? -1 : 1;
     });
+    return ret;
 }
 
 // Returns a new copy, does not modify the original.
