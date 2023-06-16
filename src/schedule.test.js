@@ -1,13 +1,17 @@
 import schedule from './schedule.js';
+import sinon from 'sinon';
 
+let clock = null;
 afterEach(() => {
-    jest.useRealTimers();
+    if (clock != null) {
+        clock.restore();
+        clock = null;
+    }
 });
 
 function getLeaveUpdates(scheduleData, walkSec, nowStr, n = 1) {
     let ret = null;
-    debugger;
-    jest.useFakeTimers({now: new Date(nowStr)});
+    clock = sinon.useFakeTimers({now: new Date(nowStr)});
     expect(new Date()).toEqual(new Date(nowStr));
     // note the () at the end which cancels the pump loop
     schedule.pumpLeaveUpdates(scheduleData, walkSec, n)(updates => ret = updates)();

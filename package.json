@@ -4,7 +4,8 @@
   "devDependencies": {
     "jest": "^29.5.0",
     "json5-loader": "^4.0.1",
-    "luxon": "^3.3.0"
+    "luxon": "^3.3.0",
+    "sinon": "^15.1.2"
   },
   "scripts": {
     "start": "react-scripts start",
