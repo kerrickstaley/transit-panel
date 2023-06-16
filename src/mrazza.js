@@ -40,7 +40,7 @@ function routeToApiRouteAndDirection(route) {
             direction: 'TO_NJ',
         },
         worldTradeCenterToNewark: {
-            route: 'HOB_NWK',
+            route: 'NWK_WTC',
             direction: 'TO_NJ',
         },
     }[route];
