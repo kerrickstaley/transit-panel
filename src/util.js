@@ -14,7 +14,7 @@ function pumpLeaveUpdatesWithFallback(fns) {
             let ret = [];
             for (let leaveUpdates of allLeaveUpdates) {
                 for (let leaveUpdate of leaveUpdates) {
-                    if (ret.length == 0 || leaveUpdate.leaveTime > ret[ret.length - 1].leaveTime) {
+                    if (ret.length === 0 || leaveUpdate.leaveTime > ret[ret.length - 1].leaveTime) {
                         ret.push(leaveUpdate);
                     }
                 }

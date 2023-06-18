@@ -1,5 +1,3 @@
-"use strict";
-
 // TODO: We don't even attempt to handle timezones. The app basically doesn't work outside the
 // Eastern timezone.
 
@@ -11,10 +9,10 @@ function dateTimeWithModifiedTime(dateTime, timeStr) {
     let [time, ampm] = timeStr.split(' ');
     let [hourStr, minute] = time.split(':');
     let hour = parseInt(hourStr);
-    if (ampm === 'AM' && hour == 12) {
+    if (ampm === 'AM' && hour === 12) {
         hour = 0;
     }
-    if (ampm === 'PM' && hour != 12) {
+    if (ampm === 'PM' && hour !== 12) {
         hour += 12;
     }
     var obj = dateTime.toObject();
@@ -78,7 +76,7 @@ function sortSingleDaySchedule(singleDaySchedule) {
     ret.sort((a, b) => {
         let aDateTime = toDateTime(a);
         let bDateTime = toDateTime(b);
-        if (aDateTime == bDateTime) {
+        if (aDateTime === bDateTime) {
             return 0;
         }
         return aDateTime < bDateTime ? -1 : 1;

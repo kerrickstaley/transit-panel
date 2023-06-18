@@ -5,7 +5,7 @@ function getRoutesBetween(origin, destination) {
     for (const [routeName, stations] of Object.entries(data['routes'])) {
         let originIdx = stations.indexOf(origin);
         let destinationIdx = stations.indexOf(destination);
-        if (originIdx != -1 && destinationIdx != -1 && destinationIdx > originIdx) {
+        if (originIdx !== -1 && destinationIdx !== -1 && destinationIdx > originIdx) {
             ret.push(routeName);
         }
     }

@@ -60,7 +60,7 @@ function getDeparturesFromJson(json, routes) {
     const apiRoutesAndDirections = routes.map(routeToApiRouteAndDirection);
     return json.upcomingTrains
         .filter(train => apiRoutesAndDirections.some(
-            ({route, direction}) => train.route == route && train.direction == direction))
+            ({route, direction}) => train.route === route && train.direction === direction))
         .map(train => new Date(train.projectedArrival));
 }
 

@@ -9,7 +9,7 @@ export default function FullscreenButton() {
             alert('Unable to fullscreen: ' + err.message);
         });
 
-        if (navigator.wakeLock == undefined) {
+        if (navigator.wakeLock === undefined) {
             setWakeLockErrorVisible(true);
         } else {
             navigator.wakeLock.request("screen");
