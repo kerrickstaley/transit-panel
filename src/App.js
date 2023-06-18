@@ -1,6 +1,6 @@
 import {useState, useEffect, createElement} from 'react';
 import FullscreenButton from './FullscreenButton.js';
-import NyWaterwayRow from './NyWaterwayFerryRow.js';
+import NyWaterwayRow from './NyWaterwayRow.js';
 import NjTransitRailRow from './NjTransitRailRow.js';
 import PathRow from './PathRow.js';
 import YAML from 'yaml';
@@ -48,8 +48,6 @@ function App() {
     // TODO fix
     props['walkSec'] = props['walkMinutes'] * 60;
     delete props['walkMinutes'];
-    props['rowTitle'] = props['title'];
-    delete props['title'];
     rows.push(createElement(rowComponent, props));
   }
   return createElement('div', {}, ...rows, <FullscreenButton />);

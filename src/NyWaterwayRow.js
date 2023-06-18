@@ -3,13 +3,13 @@ import React from 'react';
 import schedule from './schedule.js';
 import ferryIcon from './images/ferry.png';
 
-export default function NyWaterwayFerryRow(props) {
+export default function NyWaterwayRow(props) {
     let {origin, destination, walkSec} = props;
     let routeSchedule = scheduleData[origin][destination];
     let destinationCap = destination[0].toUpperCase() + destination.slice(1);
     let retProps = {
         pumpLeaveUpdates: schedule.pumpLeaveUpdates(routeSchedule, walkSec),
-        rowTitle: props.rowTitle ?? `Ferry to ${destinationCap}`,
+        title: props.title ?? `Ferry to ${destinationCap}`,
         icon: props.icon ?? ferryIcon,
         backgroundColor: props.backgroundColor ?? '#d0e0e3',
     };

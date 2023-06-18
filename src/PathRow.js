@@ -15,7 +15,7 @@ export default function PathRow(props) {
     ]);
     let retProps = {
         pumpLeaveUpdates,
-        rowTitle: props.rowTitle ?? `PATH to ${destination}`,
+        title: props.title ?? `PATH to ${destination}`,
         icon: props.icon ?? defaultIcon,
         backgroundColor: props.backgroundColor ?? backgroundColorData[destination],
     };

@@ -4,7 +4,7 @@ import './Row.css';
 const maxLeaveSecToShowOption = 90 * 60;
 
 export default function Row(props) {
-  const {rowTitle, icon, backgroundColor, pumpLeaveUpdates} = props;
+  const {title, icon, backgroundColor, pumpLeaveUpdates} = props;
 
   const [leaveMin, setLeaveMin] = useState('?');
   const [visible, setVisible] = useState(true);
@@ -62,7 +62,7 @@ export default function Row(props) {
 
   return <div className="row" style={{backgroundColor: backgroundColor, display: visible ? '' : 'none'}}>
       <div className="row-title-and-icon">
-          <div className="row-title">{rowTitle}</div>
+          <div className="row-title">{title}</div>
           <img src={icon} alt="" />
       </div>
       <div className="leave-in-min">{leaveMin}</div>
