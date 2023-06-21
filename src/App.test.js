@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders fullscreen button', () => {
+test('renders loading config text', () => {
   render(<App />);
-  const fullscreenButton = screen.getByText(/Click to go fullscreen/i);
-  expect(fullscreenButton).toBeInTheDocument();
+  const loadingConfigDiv = screen.getByText(/loading config/i);
+  expect(loadingConfigDiv).toBeInTheDocument();
 });
