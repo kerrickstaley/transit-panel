@@ -10,11 +10,24 @@ import configSchema from './configSchema.json';
 
 const ajv = new Ajv({allErrors: true});
 
-// TODO would be good if we didn't need this
-const rowComponents = {
-  NjTransitRailRow,
-  NyWaterwayRow,
-  PathRow,
+const rowComponents = (() => {
+  // TODO would be good if we didn't hardcode the list of row types here, and instead dynamically
+  // imported row types as needed.
+  let ret = {
+    NjTransitRailRow,
+    NyWaterwayRow,
+    PathRow,
+  };
+  for (let key of Object.keys(ret)) {
+    let newKey = key.charAt(0).toLowerCase() + key.substring(1, key.length - 3);
+    ret[newKey] = ret[key];
+    delete ret[key];
+  }
+  return ret;
+})();
+
+configSchema['properties']['rows']['elements']['properties']['type'] = {
+  enum: Object.keys(rowComponents),
 };
 
 const CONFIG_NOT_IN_URL = 'CONFIG_NOT_IN_URL';
@@ -51,8 +64,7 @@ function App() {
 
   let rows = [];
   for (let row of config.rows) {
-    let rowComponentName = row.type.charAt(0).toUpperCase() + row.type.substring(1) + 'Row';
-    let rowComponent = rowComponents[rowComponentName];
+    let rowComponent = rowComponents[row['type']];
     let props = Object.assign({}, row);
     delete props['type'];
     // TODO fix
