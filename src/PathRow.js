@@ -8,7 +8,12 @@ import pathTrain from './pathTrain.js';
 
 export default function PathRow(props) {
     let {origin, destination, walkSec} = props;
-    let scheduleBetween = pathTrain.getScheduleBetween(origin, destination);
+    let scheduleBetween = null;
+    try {
+        scheduleBetween = pathTrain.getScheduleBetween(origin, destination);
+    } catch (exc) {
+        return <Row configError={exc.message} />
+    }
     let pumpLeaveUpdates = util.pumpLeaveUpdatesWithFallback([
         mrazza.pumpLeaveUpdates(origin, destination, walkSec),
         schedule.pumpLeaveUpdates(scheduleBetween, walkSec),
