@@ -33,33 +33,47 @@ configSchema['properties']['rows']['elements']['properties']['type'] = {
 const CONFIG_NOT_IN_URL = 'CONFIG_NOT_IN_URL';
 const CONFIG_LOADING = 'CONFIG_LOADING';
 
-function loadConfig() {
+function loadConfig(setConfig, setConfigError) {
   const urlParams = new URLSearchParams(window.location.search);
   let configUrl = urlParams.get('config');
   if (configUrl === null) {
-    return Promise.resolve(CONFIG_NOT_IN_URL);
+    setConfigError(
+      'Config param not specified in URL! Please put ?config=<your config YAML URL> in the URL.'
+    );
+    return;
   }
-  return fetch(configUrl).then(resp => resp.text()).then(text => YAML.parse(text));
+
+  fetch(configUrl).then(resp => {
+    console.log(resp.status);
+    return resp.text();
+  })
+  .then(text => {
+    let config = YAML.parse(text);
+
+    if (!ajv.validate(configSchema, config)) {
+      const betterErrors = betterAjvErrors({configSchema, config, errors: ajv.errors});
+      setConfigError('Invalid config: ' + JSON.stringify(betterErrors));
+      return;
+    }
+
+    setConfig(config);
+  }).catch(err => setConfigError('' + err));
 }
 
 function App() {
-  let [config, setConfig] = useState(CONFIG_LOADING);
+  let [config, setConfig] = useState(null);
+  let [configError, setConfigError] = useState(null);
 
   useEffect(() => {
-    loadConfig().then(yaml => setConfig(yaml));
+    loadConfig(setConfig, setConfigError);
   }, []);
 
-  if (config === CONFIG_LOADING) {
-    return <div>Loading config...</div>;
-  } else if (config === CONFIG_NOT_IN_URL) {
-    return <div>
-      Error: config param not specified in URL! Please put ?config=&lt;your config YAML URL&gt; in the URL.
-    </div>;
+  if (configError !== null) {
+    return <div>Config error: {configError}</div>;
   }
 
-  if (!ajv.validate(configSchema, config)) {
-    const betterErrors = betterAjvErrors({configSchema, config, errors: ajv.errors});
-    return <div>Invalid config: {JSON.stringify(betterErrors)}</div>;
+  if (config === null) {
+    return <div>Loading config...</div>;
   }
 
   let rows = [];
