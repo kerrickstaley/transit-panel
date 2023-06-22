@@ -1,0 +1,28 @@
+{
+    "properties": {
+        "rows": {
+            "elements": {
+                "properties": {
+                    "type": {
+                        "type": "string"
+                    },
+                    "walkMinutes": {
+                        "type": "float64"
+                    }
+                },
+                "optionalProperties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "origin": {
+                        "type": "string"
+                    },
+                    "destination": {
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": true
+            }
+        }
+    }
+}

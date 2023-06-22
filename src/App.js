@@ -4,6 +4,11 @@ import NyWaterwayRow from './NyWaterwayRow.js';
 import NjTransitRailRow from './NjTransitRailRow.js';
 import PathRow from './PathRow.js';
 import YAML from 'yaml';
+import Ajv from 'ajv/dist/jtd';
+import { betterAjvErrors } from '@apideck/better-ajv-errors';
+import configSchema from './configSchema.json';
+
+const ajv = new Ajv({allErrors: true});
 
 // TODO would be good if we didn't need this
 const rowComponents = {
@@ -35,8 +40,13 @@ function App() {
     return <div>Loading config...</div>;
   } else if (config === CONFIG_NOT_IN_URL) {
     return <div>
-      config param not specified in URL! Please put ?config=&lt;your config YAML URL&gt; in the URL.
+      Error: config param not specified in URL! Please put ?config=&lt;your config YAML URL&gt; in the URL.
     </div>;
+  }
+
+  if (!ajv.validate(configSchema, config)) {
+    const betterErrors = betterAjvErrors({configSchema, config, errors: ajv.errors});
+    return <div>Invalid config: {JSON.stringify(betterErrors)}</div>;
   }
 
   let rows = [];
