@@ -1,9 +1,9 @@
-import {useState, useEffect} from 'react';
+import {useState, useEffect, createElement} from 'react';
 import './Row.css';
 
 const maxLeaveSecToShowOption = 90 * 60;
 
-export default function Row(props) {
+function RowInner(props) {
   const {title, icon, backgroundColor, pumpLeaveUpdates} = props;
 
   const [leaveMin, setLeaveMin] = useState('?');
@@ -69,4 +69,14 @@ export default function Row(props) {
       <div className="spacer"></div>
       <div className="method">{method}</div>
   </div>;
+}
+
+export default function Row(props) {
+  const {configError} = props;
+
+  if (configError !== null && configError !== undefined) {
+    return <div className="row">Row config error: {configError}</div>;
+  }
+
+  return createElement(RowInner, props);
 }
