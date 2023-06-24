@@ -9,6 +9,7 @@ The app currently supports these transit systems:
 - [PATH](https://www.panynj.gov/path/en/index.html) (full support, including real-time departures)
 - [NY Waterway](https://www.nywaterway.com/) (full support, schedule-only since there is no real-time data)
 - [NJ Transit](https://www.njtransit.com/) (very limited support, schedule-only)
+- [CitiBike](https://citibikenyc.com/) (real-time bike availability)
 
 ## Setup
 To create your own config, copy [my example config](https://gist.github.com/kerrickstaley/515920f7d552bc8027dc57eed4ec76b8) and modify appropriately. Host it on Gist (or anywhere you want, but keep in mind that [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) may prevent the Transit Panel app from accessing your config). Then load the page

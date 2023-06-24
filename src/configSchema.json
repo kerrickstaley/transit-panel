@@ -5,9 +5,6 @@
                 "properties": {
                     "type": {
                         "type": "string"
-                    },
-                    "walkMinutes": {
-                        "type": "float64"
                     }
                 },
                 "optionalProperties": {
@@ -19,6 +16,9 @@
                     },
                     "destination": {
                         "type": "string"
+                    },
+                    "walkMinutes": {
+                        "type": "float64"
                     }
                 },
                 "additionalProperties": true

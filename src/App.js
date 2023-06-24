@@ -2,6 +2,7 @@ import {useState, useEffect, createElement} from 'react';
 import FullscreenButton from './FullscreenButton.js';
 import NyWaterwayRow from './NyWaterwayRow.js';
 import NjTransitRailRow from './NjTransitRailRow.js';
+import CitiBikeRow from './CitiBikeRow.js';
 import PathRow from './PathRow.js';
 import YAML from 'yaml';
 import Ajv from 'ajv/dist/jtd';
@@ -14,6 +15,7 @@ const rowComponents = (() => {
   // TODO would be good if we didn't hardcode the list of row types here, and instead dynamically
   // imported row types as needed.
   let ret = {
+    CitiBikeRow,
     NjTransitRailRow,
     NyWaterwayRow,
     PathRow,
@@ -41,7 +43,6 @@ function loadConfig(setConfig, setConfigError) {
   }
 
   fetch(configUrl).then(resp => {
-    console.log(resp.status);
     return resp.text();
   })
   .then(text => {

@@ -1,0 +1,16 @@
+.bikeshare-row .row-title-and-icon > img {
+    height: 100px;
+    margin: 16pt;
+    margin-top: -5pt;
+    margin-left: 10pt;
+}
+.bikes-available {
+    font-size: 128pt;
+    padding-top: 0.05em;
+    margin-left: 5pt;
+    align-self: center;
+}
+.bikes-available::after {
+    content: "bikes available";
+    font-size: 10pt;
+}
