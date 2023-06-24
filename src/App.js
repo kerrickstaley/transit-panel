@@ -30,9 +30,6 @@ configSchema['properties']['rows']['elements']['properties']['type'] = {
   enum: Object.keys(rowComponents),
 };
 
-const CONFIG_NOT_IN_URL = 'CONFIG_NOT_IN_URL';
-const CONFIG_LOADING = 'CONFIG_LOADING';
-
 function loadConfig(setConfig, setConfigError) {
   const urlParams = new URLSearchParams(window.location.search);
   let configUrl = urlParams.get('config');
