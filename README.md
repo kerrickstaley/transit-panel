@@ -3,7 +3,7 @@
 
 This web app displays nearby transit options, along with how soon you need to leave in order to catch the next train/bus/ferry/etc. You can run it on a tablet mounted on your wall so that you can always leave on time. [Here's a blog post](https://www.kerrickstaley.com/2022/02/25/transit-panel) about how I have it set up at my apartment.
 
-[You can view the app live here.](https://www.kerrickstaley.com/transit-panel/?config=https://gist.githubusercontent.com/kerrickstaley/515920f7d552bc8027dc57eed4ec76b8/raw/8b8551887d9e6098511b22612af508f6a3c5240a/transit_panel_config.yaml)
+[You can view the app live here.](https://www.kerrickstaley.com/transit-panel/?config=https://gist.githubusercontent.com/kerrickstaley/515920f7d552bc8027dc57eed4ec76b8/raw/efc581e7b27ae16f12f6721a3ef5a9ab05d26206/transit_panel_config.yaml)
 
 The app currently supports these transit systems:
 - [PATH](https://www.panynj.gov/path/en/index.html) (full support, including real-time departures)
