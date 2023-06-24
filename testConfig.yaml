@@ -1,0 +1,11 @@
+rows:
+  - type: path
+    title: PATH to 33rd
+    origin: hoboken
+    destination: thirtyThirdStreet
+    walkMinutes: 10
+  - type: nyWaterway
+    title: Ferry to Brookfield
+    origin: hobokenSouth
+    destination: brookfield
+    walkMinutes: 10
