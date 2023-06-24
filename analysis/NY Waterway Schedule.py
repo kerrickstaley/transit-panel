@@ -47,25 +47,43 @@ for table in tables:
 schedule_urls
 
 # %%
-# TODO support all schedule URLs
-schedule_urls = [
-    'https://www.nywaterway.com/Hoboken14th-WFCRoute.aspx',
-    'https://www.nywaterway.com/HobokenNJTT-WFCRoute.aspx',
-    'https://www.nywaterway.com/PaulusHook-WTCRoute.aspx',
-]
-
-# %%
 name_to_id = {
     'Brookfield Place Terminal': 'brookfield',
     'Hoboken / NJ Transit Terminal': 'hobokenSouth',
     'Hoboken / 14th St.': 'hobokenNorth',
     'Paulus Hook': 'paulusHook',
+    'Edgewater Ferry Landing': 'edgewater',
+    'Midtown / W. 39th St.': 'midtown',
+    'Lincoln Harbor / Weehawken': 'lincolnHarbor',
+    'Port Imperial / Weehawken': 'portImperial',
+    'Pier 11 / Wall St.': 'wallStreet',
+    'Liberty Harbor / Marin Blvd.': 'libertyHarbor',
+    'Port Liberte': 'portLiberte',
+    'Haverstraw': 'haverstraw',
+    'Ossining': 'ossining',
+    'Newburgh': 'newburgh',
+    'Beacon': 'beacon',
 }
 
 
 def extract_origin(schedule_df):
     header = list(schedule_df)[0]
     return name_to_id[re.search('^Departs (.*)$', header).group(1)]
+
+
+def filter_non_time_rows(rows):
+    ret = []
+    for row in rows:
+        if 'Departs' in row:
+            continue
+        if 'Above departure runs only' in row:
+            continue
+
+        assert re.search('^[0-9]+:[0-9]+ [AP]M$', row)
+
+        ret.append(row)
+
+    return ret
 
 
 result = {}
@@ -98,7 +116,7 @@ for url in schedule_urls:
         destination = list(set(route) - {origin})[0]
 
         times = list(sch[list(sch)[0]])
-        times = [t for t in times if 'Departs' not in t]
+        times = filter_non_time_rows(times)
 
         result.setdefault(origin, {}).setdefault(destination, {})[day] = times
 
@@ -107,5 +125,6 @@ result
 # %%
 with open('nyWaterwayData.json', 'w') as f:
     json.dump({'schedules': result}, f, sort_keys=True, indent=2)
+    f.write('\n')
 
 # %%

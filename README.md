@@ -7,7 +7,7 @@ This web app displays nearby transit options, along with how soon you need to le
 
 The app currently supports these transit systems:
 - [PATH](https://www.panynj.gov/path/en/index.html) (full support, including real-time departures)
-- [NY Waterway](https://www.nywaterway.com/) (partial support, schedule-only)
+- [NY Waterway](https://www.nywaterway.com/) (full support, schedule-only since there is no real-time data)
 - [NJ Transit](https://www.njtransit.com/) (very limited support, schedule-only)
 
 ## Setup
