@@ -94,20 +94,21 @@ function sortSchedule(schedule) {
 }
 
 // For this function, schedule does not need to be sorted; we will sort it.
-function pumpLeaveUpdates(schedule, walkSec) {
+function pumpDepartures(schedule) {
     schedule = sortSchedule(schedule);
-    return setLeaveUpdates => {
+    return setDepartures => {
         let loopTimeoutId = null;
 
         function loop() {
+            // TODO use walkSec hint instead of just hardcoding 4 here
             let departures = getNextDeparturesFromSchedule(
-                schedule, new Date(new Date() / 1 + walkSec * 1000), 2);
+                schedule, new Date(), 4);
             let updates = departures.map(departure => ({
-                leaveTime: new Date(departure / 1 - walkSec * 1000),
+                departure: departure.toJSDate(),
                 methodAbbrev: 'SCH',
             }));
 
-            setLeaveUpdates(updates);
+            setDepartures(updates);
             // TODO this can be more efficient
             loopTimeoutId = setTimeout(loop, 120 * 1000);
         }
@@ -123,5 +124,5 @@ function pumpLeaveUpdates(schedule, walkSec) {
 
 export default {
     getNextDeparturesFromSchedule,
-    pumpLeaveUpdates,
+    pumpDepartures,
 };

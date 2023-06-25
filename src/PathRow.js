@@ -7,7 +7,7 @@ import schedule from './schedule.js';
 import pathTrain from './pathTrain.js';
 
 export default function PathRow(props) {
-    let {origin, destination, walkSec} = props;
+    let {origin, destination, walkMinutes} = props;
 
     let scheduleBetween = null;
     try {
@@ -20,15 +20,16 @@ export default function PathRow(props) {
         return <Row configError={`There are no PATH routes from ${origin} to ${destination}.`} />
     }
 
-    let pumpLeaveUpdates = util.pumpLeaveUpdatesWithFallback([
-        mrazza.pumpLeaveUpdates(origin, destination, walkSec),
-        schedule.pumpLeaveUpdates(scheduleBetween, walkSec),
+    let pumpDepartures = util.pumpDeparturesWithFallback([
+        mrazza.pumpDepartures(origin, destination),
+        schedule.pumpDepartures(scheduleBetween),
     ]);
     let retProps = {
-        pumpLeaveUpdates,
+        pumpDepartures,
         title: props.title ?? `PATH to ${destination}`,
         icon: props.icon ?? defaultIcon,
         backgroundColor: props.backgroundColor ?? backgroundColorData[destination],
+        walkMinutes,
     };
 
     return React.createElement(Row, retProps);

@@ -61,7 +61,11 @@ function getDeparturesFromJson(json, routes) {
     return json.upcomingTrains
         .filter(train => apiRoutesAndDirections.some(
             ({route, direction}) => train.route === route && train.direction === direction))
-        .map(train => new Date(train.projectedArrival));
+        .map(train => ({
+            // It says "arrival" but actually seems to be a departure time?
+            departure: new Date(train.projectedArrival),
+            methodAbbrev: 'API',
+        }));
 }
 
 function getDepartures(origin, routes) {
@@ -70,20 +74,13 @@ function getDepartures(origin, routes) {
         .then(json => getDeparturesFromJson(json, routes));
 }
 
-function pumpLeaveUpdates(origin, destination, walkSec) {
-    return setLeaveUpdates => {
+function pumpDepartures(origin, destination) {
+    return setDepartures => {
         let routes = pathTrain.getRoutesBetween(origin, destination);
         let loopTimeoutId = null;
 
         function loop() {
-            getDepartures(origin, routes).then(departures => {
-                let now = new Date();
-                let updates = departures.map(departure => ({
-                    leaveTime: new Date(departure / 1 - walkSec * 1000),
-                    methodAbbrev: 'API',
-                })).filter(update => update.leaveTime >= now);
-                setLeaveUpdates(updates);
-            });
+            getDepartures(origin, routes).then(setDepartures);
 
             // TODO this can be more efficient
             loopTimeoutId = setTimeout(loop, (40 + 5 * Math.random()) * 1000);
@@ -101,5 +98,5 @@ function pumpLeaveUpdates(origin, destination, walkSec) {
 export default {
     getDeparturesFromJson,
     getDepartures,
-    pumpLeaveUpdates,
+    pumpDepartures,
 };

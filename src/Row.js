@@ -4,48 +4,49 @@ import './Row.css';
 const maxLeaveSecToShowOption = 90 * 60;
 
 function RowInner(props) {
-  const {title, icon, backgroundColor, pumpLeaveUpdates} = props;
+  const {title, icon, backgroundColor, pumpDepartures, walkMinutes} = props;
 
   const [leaveMin, setLeaveMin] = useState('?');
   const [visible, setVisible] = useState(true);
   const [method, setMethod] = useState('?');
 
   useEffect(() => {
-    let displayLeaveUpdatesLoopTimeoutId = null;
+    let displayDeparturesLoopTimeoutId = null;
 
-    // displayLeaveUpdates starts a setTimeout-loop that updates the displayed leaveMin as time
+    // displayDepartures starts a setTimeout-loop that updates the displayed leaveMin as time
     // elapses. This is necessary so that the value continues to update even if no new leave
     // updates are pumped.
-    function displayLeaveUpdates(leaveUpdates) {
-      clearTimeout(displayLeaveUpdatesLoopTimeoutId);
-      displayLeaveUpdatesLoopTimeoutId = null;
+    function displayDepartures(departures) {
+      clearTimeout(displayDeparturesLoopTimeoutId);
+      displayDeparturesLoopTimeoutId = null;
 
       function loop() {
-        let now = new Date();
+        // When you would arrive at the station if you left now.
+        let walkArrival = new Date(new Date() / 1 + walkMinutes * 60 * 1000);
 
-        let nextLeaveUpdate = null;
-        for (let leaveUpdate of leaveUpdates) {
-          if (leaveUpdate.leaveTime >= now) {
-            nextLeaveUpdate = leaveUpdate;
+        let nextDeparture = null;
+        for (let departure of departures) {
+          if (departure.departure >= walkArrival) {
+            nextDeparture = departure;
             break;
           }
         }
 
-        if (nextLeaveUpdate === null) {
+        if (nextDeparture === null) {
           setLeaveMin('?');
           setMethod('?');
           setVisible(true);
-          displayLeaveUpdatesLoopTimeoutId = null;
+          displayDeparturesLoopTimeoutId = null;
           return;
         }
 
-        let leaveSec = (nextLeaveUpdate.leaveTime - now) / 1000;
+        let leaveSec = (nextDeparture.departure - walkArrival) / 1000;
         let leaveMin = Math.floor(leaveSec / 60);
         setLeaveMin(leaveMin);
-        setMethod(nextLeaveUpdate.methodAbbrev);
+        setMethod(nextDeparture.methodAbbrev);
         setVisible(leaveSec <= maxLeaveSecToShowOption);
 
-        displayLeaveUpdatesLoopTimeoutId = setTimeout(
+        displayDeparturesLoopTimeoutId = setTimeout(
           // Add 0.1 seconds so that the timer will definitely roll over by the time we get there.
           loop, (leaveSec % 60 + 0.1) * 1000);
       }
@@ -53,12 +54,12 @@ function RowInner(props) {
       loop();
     }
 
-    let cancelPump = pumpLeaveUpdates(displayLeaveUpdates);
+    let cancelPump = pumpDepartures(displayDepartures);
     return function cancel() {
       cancelPump();
-      clearTimeout(displayLeaveUpdatesLoopTimeoutId);
+      clearTimeout(displayDeparturesLoopTimeoutId);
     };
-  }, [pumpLeaveUpdates]);
+  }, [pumpDepartures]);
 
   return <div className="row" style={{backgroundColor: backgroundColor, display: visible ? '' : 'none'}}>
       <div className="row-title-and-icon">

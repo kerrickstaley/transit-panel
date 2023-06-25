@@ -5,7 +5,7 @@ import ferryIcon from './images/ferry.png';
 import data from './nyWaterwayData.json';
 
 export default function NyWaterwayRow(props) {
-    let {origin, destination, walkSec} = props;
+    let {origin, destination, walkMinutes} = props;
     if (!data['schedules'].hasOwnProperty(origin)) {
         return <Row configError={
             `Invalid NY Waterway origin: ${origin}. Valid origins are: ${Object.keys(data['schedules'])}`
@@ -19,10 +19,11 @@ export default function NyWaterwayRow(props) {
     let routeSchedule = data['schedules'][origin][destination];
     let destinationCap = destination[0].toUpperCase() + destination.slice(1);
     let retProps = {
-        pumpLeaveUpdates: schedule.pumpLeaveUpdates(routeSchedule, walkSec),
+        pumpDepartures: schedule.pumpDepartures(routeSchedule),
         title: props.title ?? `Ferry to ${destinationCap}`,
         icon: props.icon ?? ferryIcon,
         backgroundColor: props.backgroundColor ?? '#d0e0e3',
+        walkMinutes,
     };
 
     return React.createElement(Row, retProps);

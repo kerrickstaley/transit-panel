@@ -79,9 +79,6 @@ function App() {
     let rowComponent = rowComponents[row['type']];
     let props = Object.assign({}, row);
     delete props['type'];
-    // TODO fix
-    props['walkSec'] = props['walkMinutes'] * 60;
-    delete props['walkMinutes'];
     rows.push(createElement(rowComponent, props));
   }
   return createElement('div', {}, ...rows, <FullscreenButton />);

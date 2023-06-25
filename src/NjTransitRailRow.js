@@ -4,13 +4,14 @@ import schedule from './schedule.js';
 import icon from './images/at_grade_train.png';
 
 export default function NjTransitRailRow(props) {
-    let {origin, routeName, walkSec} = props;
+    let {origin, routeName, walkMinutes} = props;
     let routeSchedule = scheduleData[origin][routeName];
     let retProps = {
-        pumpLeaveUpdates: schedule.pumpLeaveUpdates(routeSchedule, walkSec),
+        pumpDepartures: schedule.pumpDepartures(routeSchedule),
         title: props.title ?? routeName.toUpperCase(),
         icon: props.icon ?? icon,
         backgroundColor: props.backgroundColor ?? backgroundColorData[routeName],
+        walkMinutes,
     };
 
     return React.createElement(Row, retProps);
