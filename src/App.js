@@ -42,7 +42,7 @@ function loadConfig(setConfig, setConfigError) {
     return;
   }
 
-  fetch(configUrl).then(resp => {
+  fetch(configUrl, {cache: 'no-store'}).then(resp => {
     return resp.text();
   })
   .then(text => {
