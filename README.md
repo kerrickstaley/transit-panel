@@ -3,7 +3,7 @@
 
 This web app displays nearby transit options, along with how soon you need to leave in order to catch the next train/bus/ferry/etc. You can run it on a tablet mounted on your wall so that you can always leave on time. [Here's a blog post](https://www.kerrickstaley.com/2022/02/25/transit-panel) about how I have it set up at my apartment.
 
-[You can view the app live here.](https://www.kerrickstaley.com/transit-panel/?config=https://gist.githubusercontent.com/kerrickstaley/515920f7d552bc8027dc57eed4ec76b8/raw/efc581e7b27ae16f12f6721a3ef5a9ab05d26206/transit_panel_config.yaml)
+[You can view the app live here.](https://www.kerrickstaley.com/transit-panel/?config=https://gist.githubusercontent.com/kerrickstaley/515920f7d552bc8027dc57eed4ec76b8/raw)
 
 The app currently supports these transit systems:
 - [PATH](https://www.panynj.gov/path/en/index.html) (full support, including real-time departures)
@@ -16,6 +16,6 @@ To create your own config, copy [my example config](https://gist.github.com/kerr
 ```
 https://www.kerrickstaley.com/transit-panel/?config=<your config url>
 ```
-If using Gist, make sure to click the "Raw" link to get the raw URL.
+If using Gist, make sure to click the "Raw" link to get the raw URL, and use [this URL format](https://stackoverflow.com/a/37997658/785404) if you want to get a raw link that stays up-to-date when you update the Gist.
 
 In order to transfer the URL to a tablet, you may want to use a QR code generator like [this one](https://www.qr-code-generator.com/).
