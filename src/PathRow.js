@@ -57,8 +57,8 @@ function getDefaultBackgroundColor(routesBetween) {
     ];
 
     for (let [routeName, color] of colors) {
-        if (routesBetween.indexOf(routeName) != -1
-            || routesBetween.indexOf(pathTrain.getReverseRoute(routeName)) != -1) {
+        if (routesBetween.indexOf(routeName) !== -1
+            || routesBetween.indexOf(pathTrain.getReverseRoute(routeName)) !== -1) {
             return color;
         }
     }
