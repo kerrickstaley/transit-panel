@@ -28,18 +28,41 @@ export default function PathRow(props) {
         pumpDepartures,
         title: props.title ?? `PATH to ${destination}`,
         icon: props.icon ?? defaultIcon,
-        backgroundColor: props.backgroundColor ?? backgroundColorData[destination],
+        backgroundColor: props.backgroundColor
+            ?? getDefaultBackgroundColor(pathTrain.getRoutesBetween(origin, destination)),
         walkMinutes,
     };
 
     return React.createElement(Row, retProps);
 }
 
-let backgroundColorData = {
-    // Original color from PATH website is rgb(240, 171, 67).
-    // Lightened 50% using https://pinetools.com/lighten-color
-    thirtyThirdStreet: '#f7d5a1',
-    // Original color from PATH website is rgb(70, 156, 35).
-    // Lightened 50% using https://pinetools.com/lighten-color
-    worldTradeCenter: '#99e17c',
-};
+function getDefaultBackgroundColor(routesBetween) {
+    let colors = [
+        // Orange
+        // Original color from PATH website is rgb(240, 171, 67).
+        // Lightened 50% using https://pinetools.com/lighten-color
+        ['journalSquareToThirtyThirdStreet', '#f7d5a1'],
+        // Green
+        // Original color from PATH website is rgb(70, 156, 35).
+        // Lightened 50% using https://pinetools.com/lighten-color
+        ['hobokenToWorldTradeCenter', '#99e17c'],
+        // Red
+        // Original color from PATH website is rgb(213, 61, 46).
+        // Lightened 50% using https://pinetools.com/lighten-color
+        ['newarkToWorldTradeCenter', '#ea9e96'],
+        // Blue
+        // Original color from PATH website is rgb(43, 133, 187).
+        // Lightened 40% using https://pinetools.com/lighten-color
+        ['hobokenToThirtyThirdStreet', '#76b8df'],
+    ];
+
+    for (let [routeName, color] of colors) {
+        if (routesBetween.indexOf(routeName) != -1
+            || routesBetween.indexOf(pathTrain.getReverseRoute(routeName)) != -1) {
+            return color;
+        }
+    }
+
+    // Should not happen?
+    return '#cccccc';
+}

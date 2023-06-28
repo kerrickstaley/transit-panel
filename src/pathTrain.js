@@ -35,7 +35,12 @@ function getScheduleBetween(origin, destination) {
     return ret;
 }
 
+function getReverseRoute(routeName) {
+    return data['routes'][routeName]['reverse'];
+}
+
 export default {
     getRoutesBetween,
     getScheduleBetween,
+    getReverseRoute,
 };
