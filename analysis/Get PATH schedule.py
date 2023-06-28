@@ -86,6 +86,15 @@ def parse_header(header):
     else:
             raise ValueError(f'Could not parse {header=}')
 
+
+def get_route_name(origin, destination, *, via_hoboken):
+    ret = f'{origin}To{destination[0].upper()}{destination[1:]}'
+    if via_hoboken:
+        ret += 'ViaHoboken'
+
+    return ret
+
+
 for day, tables in day_tables.items():
     for table in tables:
         headers = list(table)
@@ -94,11 +103,13 @@ for day, tables in day_tables.items():
         origin = stations[0]
         destination = stations[-1]
 
-        route_name = f'{origin}To{destination[0].upper()}{destination[1:]}'
-        if 'hoboken' in stations[1:-1]:
-            route_name += 'ViaHoboken'
+        via_hoboken = 'hoboken' in stations[1:-1]
+        route_name = get_route_name(origin, destination, via_hoboken=via_hoboken)
+        reverse_route_name = get_route_name(destination, origin, via_hoboken=via_hoboken)
 
-        routes[route_name] = stations
+        routes[route_name] = {}
+        routes[route_name]['stations'] = stations
+        routes[route_name]['reverse'] = reverse_route_name
 
         for col in list(table)[:-1]:
             station = parse_header(col)

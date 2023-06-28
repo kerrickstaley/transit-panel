@@ -1,6 +1,6 @@
 import data from './pathTrainData.json';
 
-const allStations = new Set(Object.entries(data['routes']).map(([_, stations]) => stations).flat());
+const allStations = new Set(Object.entries(data['routes']).map(([_, route]) => route['stations']).flat());
 
 function validateOriginDestination(origin, destination) {
     if (!allStations.has(origin)) {
@@ -14,9 +14,9 @@ function validateOriginDestination(origin, destination) {
 function getRoutesBetween(origin, destination) {
     validateOriginDestination(origin, destination);
     let ret = [];
-    for (const [routeName, stations] of Object.entries(data['routes'])) {
-        let originIdx = stations.indexOf(origin);
-        let destinationIdx = stations.indexOf(destination);
+    for (const [routeName, route] of Object.entries(data['routes'])) {
+        let originIdx = route['stations'].indexOf(origin);
+        let destinationIdx = route['stations'].indexOf(destination);
         if (originIdx !== -1 && destinationIdx !== -1 && destinationIdx > originIdx) {
             ret.push(routeName);
         }

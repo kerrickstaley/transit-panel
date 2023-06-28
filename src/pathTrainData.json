@@ -1,91 +1,121 @@
 {
   "routes": {
-    "hobokenToThirtyThirdStreet": [
-      "hoboken",
-      "christopherStreet",
-      "ninthStreet",
-      "fourteenthStreet",
-      "twentyThirdStreet",
-      "thirtyThirdStreet"
-    ],
-    "hobokenToWorldTradeCenter": [
-      "hoboken",
-      "newport",
-      "exchangePlace",
-      "worldTradeCenter"
-    ],
-    "journalSquareToThirtyThirdStreet": [
-      "journalSquare",
-      "groveStreet",
-      "newport",
-      "christopherStreet",
-      "ninthStreet",
-      "fourteenthStreet",
-      "twentyThirdStreet",
-      "thirtyThirdStreet"
-    ],
-    "journalSquareToThirtyThirdStreetViaHoboken": [
-      "journalSquare",
-      "groveStreet",
-      "newport",
-      "hoboken",
-      "christopherStreet",
-      "ninthStreet",
-      "fourteenthStreet",
-      "twentyThirdStreet",
-      "thirtyThirdStreet"
-    ],
-    "newarkToWorldTradeCenter": [
-      "newark",
-      "harrison",
-      "journalSquare",
-      "groveStreet",
-      "exchangePlace",
-      "worldTradeCenter"
-    ],
-    "thirtyThirdStreetToHoboken": [
-      "thirtyThirdStreet",
-      "twentyThirdStreet",
-      "fourteenthStreet",
-      "ninthStreet",
-      "christopherStreet",
-      "hoboken"
-    ],
-    "thirtyThirdStreetToJournalSquare": [
-      "thirtyThirdStreet",
-      "twentyThirdStreet",
-      "fourteenthStreet",
-      "ninthStreet",
-      "christopherStreet",
-      "newport",
-      "groveStreet",
-      "journalSquare"
-    ],
-    "thirtyThirdStreetToJournalSquareViaHoboken": [
-      "thirtyThirdStreet",
-      "twentyThirdStreet",
-      "fourteenthStreet",
-      "ninthStreet",
-      "christopherStreet",
-      "hoboken",
-      "newport",
-      "groveStreet",
-      "journalSquare"
-    ],
-    "worldTradeCenterToHoboken": [
-      "worldTradeCenter",
-      "exchangePlace",
-      "newport",
-      "hoboken"
-    ],
-    "worldTradeCenterToNewark": [
-      "worldTradeCenter",
-      "exchangePlace",
-      "groveStreet",
-      "journalSquare",
-      "harrison",
-      "newark"
-    ]
+    "hobokenToThirtyThirdStreet": {
+      "reverse": "thirtyThirdStreetToHoboken",
+      "stations": [
+        "hoboken",
+        "christopherStreet",
+        "ninthStreet",
+        "fourteenthStreet",
+        "twentyThirdStreet",
+        "thirtyThirdStreet"
+      ]
+    },
+    "hobokenToWorldTradeCenter": {
+      "reverse": "worldTradeCenterToHoboken",
+      "stations": [
+        "hoboken",
+        "newport",
+        "exchangePlace",
+        "worldTradeCenter"
+      ]
+    },
+    "journalSquareToThirtyThirdStreet": {
+      "reverse": "thirtyThirdStreetToJournalSquare",
+      "stations": [
+        "journalSquare",
+        "groveStreet",
+        "newport",
+        "christopherStreet",
+        "ninthStreet",
+        "fourteenthStreet",
+        "twentyThirdStreet",
+        "thirtyThirdStreet"
+      ]
+    },
+    "journalSquareToThirtyThirdStreetViaHoboken": {
+      "reverse": "thirtyThirdStreetToJournalSquareViaHoboken",
+      "stations": [
+        "journalSquare",
+        "groveStreet",
+        "newport",
+        "hoboken",
+        "christopherStreet",
+        "ninthStreet",
+        "fourteenthStreet",
+        "twentyThirdStreet",
+        "thirtyThirdStreet"
+      ]
+    },
+    "newarkToWorldTradeCenter": {
+      "reverse": "worldTradeCenterToNewark",
+      "stations": [
+        "newark",
+        "harrison",
+        "journalSquare",
+        "groveStreet",
+        "exchangePlace",
+        "worldTradeCenter"
+      ]
+    },
+    "thirtyThirdStreetToHoboken": {
+      "reverse": "hobokenToThirtyThirdStreet",
+      "stations": [
+        "thirtyThirdStreet",
+        "twentyThirdStreet",
+        "fourteenthStreet",
+        "ninthStreet",
+        "christopherStreet",
+        "hoboken"
+      ]
+    },
+    "thirtyThirdStreetToJournalSquare": {
+      "reverse": "journalSquareToThirtyThirdStreet",
+      "stations": [
+        "thirtyThirdStreet",
+        "twentyThirdStreet",
+        "fourteenthStreet",
+        "ninthStreet",
+        "christopherStreet",
+        "newport",
+        "groveStreet",
+        "journalSquare"
+      ]
+    },
+    "thirtyThirdStreetToJournalSquareViaHoboken": {
+      "reverse": "journalSquareToThirtyThirdStreetViaHoboken",
+      "stations": [
+        "thirtyThirdStreet",
+        "twentyThirdStreet",
+        "fourteenthStreet",
+        "ninthStreet",
+        "christopherStreet",
+        "hoboken",
+        "newport",
+        "groveStreet",
+        "journalSquare"
+      ]
+    },
+    "worldTradeCenterToHoboken": {
+      "reverse": "hobokenToWorldTradeCenter",
+      "stations": [
+        "worldTradeCenter",
+        "exchangePlace",
+        "newport",
+        "hoboken"
+      ]
+    },
+    "worldTradeCenterToNewark": {
+      "reverse": "newarkToWorldTradeCenter",
+      "stations": [
+        "worldTradeCenter",
+        "exchangePlace",
+        "groveStreet",
+        "journalSquare",
+        "harrison",
+        "newark"
+      ]
+    }
   },
   "schedules": {
     "hobokenToThirtyThirdStreet": {
