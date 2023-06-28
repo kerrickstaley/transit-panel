@@ -59,7 +59,7 @@ function RowInner(props) {
       cancelPump();
       clearTimeout(displayDeparturesLoopTimeoutId);
     };
-  }, [pumpDepartures]);
+  }, [pumpDepartures, walkMinutes]);
 
   return <div className="row" style={{backgroundColor: backgroundColor, display: visible ? '' : 'none'}}>
       <div className="row-title-and-icon">

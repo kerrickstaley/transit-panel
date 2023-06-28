@@ -1,4 +1,4 @@
-import {useState, useEffect, createElement} from 'react';
+import {useState, useEffect} from 'react';
 import icon from './images/bicycle.png';
 import './Row.css';
 import './BikeshareRow.css';
@@ -13,7 +13,7 @@ function pumpBikesAvailable(displayBikesAvailable, stationStatusUrl, stationId) 
         fetch(stationStatusUrl).then(resp => resp.json()).then(json => {
             let foundStation = null;
             for (let station of json['data']['stations']) {
-                if (station.station_id == stationId) {
+                if (station.station_id === stationId) {
                     foundStation = station;
                     break;
                 }
@@ -59,7 +59,7 @@ export default function BikeshareRow(props) {
         displayBikesAvailable,
         stationStatusUrl,
         stationId);
-  }, []);
+  }, [stationStatusUrl, stationId]);
 
   return <div className="row bikeshare-row" style={{backgroundColor: backgroundColor, display: visible ? '' : 'none'}}>
       <div className="row-title-and-icon">
