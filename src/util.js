@@ -1,3 +1,5 @@
+const luxon = require('luxon');
+
 // Given a list of pumpDepartures functions, merge them.
 // The merged result list of departures will start with all the departures from the first fn.
 // Then it will include all the departures from the second fn that are after the last departure
@@ -37,6 +39,45 @@ function pumpDeparturesWithFallback(fns) {
     }
 }
 
+// Given a Luxon DateTime and a string like '8:30 AM', return a Luxon DateTime with the same date as
+// the input DateTime but with the time modified to be the time expressed by the string.
+function dateTimeWithModifiedTime(dateTime, timeStr) {
+    let [time, ampm] = timeStr.split(' ');
+    let [hourStr, minute] = time.split(':');
+    let hour = parseInt(hourStr);
+    if (ampm === 'AM' && hour === 12) {
+        hour = 0;
+    }
+    if (ampm === 'PM' && hour !== 12) {
+        hour += 12;
+    }
+    var obj = dateTime.toObject();
+    obj.hour = hour;
+    obj.minute = minute;
+    obj.second = 0;
+    obj.millisecond = 0;
+    return luxon.DateTime.fromObject(obj);
+}
+
+// Given a time string like '9:31 PM', find the next instance of that time that is after now, in
+// the local timezone.
+// TODO Make this independent of system timezone.
+function getNextInstanceOfTime(nowJs, time) {
+    let now = luxon.DateTime.fromJSDate(nowJs);
+    let timeToday = dateTimeWithModifiedTime(now, time);
+    if (timeToday >= now) {
+        return timeToday.toJSDate();
+    }
+
+    let timeTomorrow = dateTimeWithModifiedTime(
+        dateTimeWithModifiedTime(now, '12:00 PM').plus(luxon.Duration.fromObject({hours: 24})),
+        time);
+
+    return timeTomorrow.toJSDate();
+}
+
 export default {
     pumpDeparturesWithFallback,
+    dateTimeWithModifiedTime,
+    getNextInstanceOfTime,
 };

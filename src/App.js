@@ -4,6 +4,7 @@ import NyWaterwayRow from './NyWaterwayRow.js';
 import NjTransitRailRow from './NjTransitRailRow.js';
 import CitiBikeRow from './CitiBikeRow.js';
 import PathRow from './PathRow.js';
+import NjTransitBusRow from './NjTransitBusRow.js';
 import YAML from 'yaml';
 import Ajv from 'ajv/dist/jtd';
 import { betterAjvErrors } from '@apideck/better-ajv-errors';
@@ -19,6 +20,7 @@ const rowComponents = (() => {
     NjTransitRailRow,
     NyWaterwayRow,
     PathRow,
+    NjTransitBusRow,
   };
   for (let key of Object.keys(ret)) {
     let newKey = key.charAt(0).toLowerCase() + key.substring(1, key.length - 3);

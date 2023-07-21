@@ -1,27 +1,8 @@
 // TODO: We don't even attempt to handle timezones. The app basically doesn't work outside the
 // Eastern timezone.
 
+import util from './util.js';
 const luxon = require('luxon');
-
-// Given a Luxon DateTime and a string like '8:30 AM', return a Luxon DateTime with the same date as
-// the input DateTime but with the time modified to be the time expressed by the string.
-function dateTimeWithModifiedTime(dateTime, timeStr) {
-    let [time, ampm] = timeStr.split(' ');
-    let [hourStr, minute] = time.split(':');
-    let hour = parseInt(hourStr);
-    if (ampm === 'AM' && hour === 12) {
-        hour = 0;
-    }
-    if (ampm === 'PM' && hour !== 12) {
-        hour += 12;
-    }
-    var obj = dateTime.toObject();
-    obj.hour = hour;
-    obj.minute = minute;
-    obj.second = 0;
-    obj.millisecond = 0;
-    return luxon.DateTime.fromObject(obj);
-}
 
 // Given a schedule with keys like 'monday', 'tuesday', 'weekday', 'weekend' and a dayIdx, return
 // the schedule for that day. 0 <= dayIdx < 7, 0 is Monday and 6 is Sunday.
@@ -54,7 +35,7 @@ function getNextDeparturesFromSchedule(schedule, date, n = 1) {
         const futureDateTime = dateTime.plus(Duration.fromObject({days: dayDelta}));
         const daySchedule = getDaySchedule(schedule, futureDateTime.weekday - 1);
         for (let time of daySchedule) {
-            let departureTime = dateTimeWithModifiedTime(futureDateTime, time);
+            let departureTime = util.dateTimeWithModifiedTime(futureDateTime, time);
             if (departureTime >= date) {
                 ret.push(departureTime);
 
