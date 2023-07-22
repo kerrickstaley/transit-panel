@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import argparse
 import flask
+import functools
 import sys
 import selenium.webdriver
+import threading
 import logging
 
 argparser = argparse.ArgumentParser()
@@ -28,17 +30,23 @@ class NjTransitBusApiGetter:
         log('Starting Chrome...')
         self.driver = selenium.webdriver.Chrome()
         log('Done starting Chrome')
+
+        self.lock = threading.Lock()
     
     def get(self, stop: int):
         url = self.API_URL.format(stop=stop)
-        self.driver.get(url)
 
-        return self.driver.find_element(
-            by=selenium.webdriver.common.by.By.ID,
-            value="webkit-xml-viewer-source-xml").get_attribute('innerHTML')
+        with self.lock:
+            self.driver.get(url)
+
+            return self.driver.find_element(
+                by=selenium.webdriver.common.by.By.ID,
+                value="webkit-xml-viewer-source-xml").get_attribute('innerHTML')
 
 
-api_getter = NjTransitBusApiGetter()
+@functools.lru_cache
+def api_getter():
+    return NjTransitBusApiGetter()
 
 @app.route('/')
 def index():
@@ -49,7 +57,7 @@ def index():
     except (TypeError, ValueError):
         return 'invalid stop', 400
 
-    data = api_getter.get(stop)
+    data = api_getter().get(stop)
     resp = flask.Response(data, mimetype='text/xml')
     resp.headers['Access-Control-Allow-Origin'] = '*'
     return resp
