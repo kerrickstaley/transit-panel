@@ -22,7 +22,7 @@ function getDeparturesFromXml(xml, routeNum, now) {
             continue;
         }
         ret.push({
-            departure: util.getNextInstanceOfTime(now, pre['nextbusonroutetime']),
+            departure: util.getNextInstanceOfTime(new Date(now - 30 * 60e3), pre['nextbusonroutetime']),
             methodAbbrev: 'API',
         });
     }

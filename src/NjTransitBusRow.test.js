@@ -9,7 +9,7 @@ test('no departures', () => {
     .toStrictEqual([]);
 });
 
-test('departures 1', () => {
+test('it handles normal departures', () => {
   let data = `
     <stop>
       <pre>
@@ -71,7 +71,7 @@ test('departures 1', () => {
     ]);
 });
 
-test('departures 2', () => {
+test('it handles departures across a day boundary', () => {
   let data = `
     <?xml version="1.0"?>
     <stop>
@@ -136,7 +136,7 @@ test('departures 2', () => {
     ]);
 });
 
-test('departures 3', () => {
+test('it handles a single departure', () => {
   let data = `
     <stop>
       <pre>
@@ -161,6 +161,55 @@ test('departures 3', () => {
     .toStrictEqual([
       {
         departure: new Date('2023-06-25T01:02:00-04:00'),
+        methodAbbrev: 'API',
+      },
+    ]);
+});
+
+test('it handles departures in the recent past', () => {
+  let data = `
+    <stop>
+      <pre>
+        <pt><![CDATA[ &nbsp; ]]></pt>
+        <pu>APPROACHING</pu>
+        <mode>1</mode>
+        <consist />
+        <cars />
+        <fd> 126 NEW YORK</fd>
+        <zone />
+        <scheduled>false</scheduled>
+        <nextbusminutes>0</nextbusminutes>
+        <nextbusonroutetime>12:02 AM</nextbusonroutetime>
+        <v>5711</v>
+        <rn>126</rn>
+        <rd>126</rd>
+      </pre>
+      <pre>
+        <pt>29</pt>
+        <pu> MINUTES</pu>
+        <mode>1</mode>
+        <consist />
+        <cars />
+        <fd> 126 NEW YORK</fd>
+        <zone />
+        <scheduled>false</scheduled>
+        <nextbusminutes>0</nextbusminutes>
+        <nextbusonroutetime>12:32 AM</nextbusonroutetime>
+        <v>5243</v>
+        <rn>126</rn>
+        <rd>126</rd>
+      </pre>
+    </stop>
+  `;
+
+  expect(getDeparturesFromXml(data, 126, new Date('2023-06-25T00:03:00-04:00')))
+    .toStrictEqual([
+      {
+        departure: new Date('2023-06-25T00:02:00-04:00'),
+        methodAbbrev: 'API',
+      },
+      {
+        departure: new Date('2023-06-25T00:32:00-04:00'),
         methodAbbrev: 'API',
       },
     ]);
