@@ -2,7 +2,7 @@ import { XMLParser } from 'fast-xml-parser';
 import Row from './Row.js';
 import React from 'react';
 import util from './util.js';
-import defaultIcon from './images/below_grade_train.png';
+import defaultIcon from './images/bus.png';
 
 // TODO include information from the 'pt' field in the XML to try to get sub-minute resolution.
 function getDeparturesFromXml(xml, routeNum, now) {
