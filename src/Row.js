@@ -20,6 +20,8 @@ function RowInner(props) {
       clearTimeout(displayDeparturesLoopTimeoutId);
       displayDeparturesLoopTimeoutId = null;
 
+      departures.sort();
+
       function loop() {
         // When you would arrive at the station if you left now.
         let walkArrival = new Date(new Date() / 1 + walkMinutes * 60 * 1000);
