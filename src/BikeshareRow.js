@@ -9,6 +9,12 @@ const pollEverySec = 60;
 function pumpBikesAvailable(displayBikesAvailable, stationStatusUrl, stationId) {
     let loopTimeoutId = null;
 
+    // TODO: Create a mechanism for this to appear as a config error instead of using console.log,
+    // or support unquoted ints in the config (using intAsBigInt arg to YAML.parse).
+    if (typeof stationId === 'number') {
+        console.log(`bikeshare stationId ${stationId} must be a string! Please quote it in the YAML config. This bikeshare row will not work.`);
+    }
+
     function loop() {
         fetch(stationStatusUrl).then(resp => resp.json()).then(json => {
             let foundStation = null;
