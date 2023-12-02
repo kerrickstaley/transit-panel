@@ -19,6 +19,7 @@ import bs4
 import pandas as pd
 import re
 import json
+import io
 
 # %%
 requests_cache.install_cache()
@@ -90,7 +91,7 @@ result = {}
 for url in schedule_urls:
     resp = requests.get(url)
     soup = bs4.BeautifulSoup(resp.text)
-    tables = pd.read_html(resp.text)
+    tables = pd.read_html(io.StringIO(resp.text))
     schedules = [t for t in tables if any('Departs' in header for header in list(t))]
 
     if 'WEEKDAY SCHEDULE' not in str(soup):
