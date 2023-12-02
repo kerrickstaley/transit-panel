@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.14.5
+#       jupytext_version: 1.15.2
 #   kernelspec:
 #     display_name: Python 3 (ipykernel)
 #     language: python
@@ -114,11 +114,14 @@ for url in schedule_urls:
 
         origin = extract_origin(sch)
         destination = list(set(route) - {origin})[0]
+        sch_out = result.setdefault(origin, {}).setdefault(destination, {})
+        sch_out.setdefault('weekday', [])
+        sch_out.setdefault('weekend', [])
 
         times = list(sch[list(sch)[0]])
         times = filter_non_time_rows(times)
 
-        result.setdefault(origin, {}).setdefault(destination, {})[day] = times
+        sch_out[day] = times
 
 result
 

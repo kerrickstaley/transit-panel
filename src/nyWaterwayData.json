@@ -17,7 +17,8 @@
           "7:46 PM",
           "8:13 PM",
           "8:48 PM"
-        ]
+        ],
+        "weekend": []
       }
     },
     "brookfield": {
@@ -31,7 +32,8 @@
           "5:20 PM",
           "6:40 PM",
           "7:10 PM"
-        ]
+        ],
+        "weekend": []
       },
       "hobokenNorth": {
         "weekday": [
@@ -50,7 +52,8 @@
           "6:40 PM",
           "7:10 PM",
           "7:40 PM"
-        ]
+        ],
+        "weekend": []
       },
       "hobokenSouth": {
         "weekday": [
@@ -259,7 +262,8 @@
           "6:40 PM",
           "7:10 PM",
           "7:40 PM"
-        ]
+        ],
+        "weekend": []
       }
     },
     "edgewater": {
@@ -273,7 +277,8 @@
           "4:30 PM",
           "5:10 PM",
           "6:30 PM"
-        ]
+        ],
+        "weekend": []
       },
       "midtown": {
         "weekday": [
@@ -288,7 +293,8 @@
           "5:50 PM",
           "6:30 PM",
           "7:10 PM"
-        ]
+        ],
+        "weekend": []
       },
       "wallStreet": {
         "weekday": [
@@ -300,7 +306,8 @@
           "4:30 PM",
           "5:10 PM",
           "6:30 PM"
-        ]
+        ],
+        "weekend": []
       }
     },
     "haverstraw": {
@@ -320,7 +327,8 @@
           "8:19 PM",
           "8:53 PM",
           "9:22 PM"
-        ]
+        ],
+        "weekend": []
       }
     },
     "hobokenNorth": {
@@ -341,7 +349,8 @@
           "5:55 PM",
           "6:20 PM",
           "6:50 PM"
-        ]
+        ],
+        "weekend": []
       },
       "midtown": {
         "weekday": [
@@ -446,7 +455,8 @@
           "5:55 PM",
           "6:20 PM",
           "6:50 PM"
-        ]
+        ],
+        "weekend": []
       }
     },
     "hobokenSouth": {
@@ -547,7 +557,8 @@
           "5:45 PM",
           "6:20 PM",
           "6:55 PM"
-        ]
+        ],
+        "weekend": []
       }
     },
     "libertyHarbor": {
@@ -569,7 +580,8 @@
           "5:45 PM",
           "6:15 PM",
           "6:45 PM"
-        ]
+        ],
+        "weekend": []
       }
     },
     "lincolnHarbor": {
@@ -673,7 +685,8 @@
           "6:10 PM",
           "6:50 PM",
           "7:30 PM"
-        ]
+        ],
+        "weekend": []
       },
       "hobokenNorth": {
         "weekday": [
@@ -1010,7 +1023,8 @@
           "7:29 PM",
           "7:55 PM",
           "8:22 PM"
-        ]
+        ],
+        "weekend": []
       }
     },
     "ossining": {
@@ -1031,7 +1045,8 @@
           "8:38 PM",
           "9:07 PM",
           "9:41 PM"
-        ]
+        ],
+        "weekend": []
       }
     },
     "paulusHook": {
@@ -1195,7 +1210,8 @@
           "5:52 PM",
           "6:22 PM",
           "6:52 PM"
-        ]
+        ],
+        "weekend": []
       }
     },
     "portImperial": {
@@ -1216,7 +1232,8 @@
           "6:05 PM",
           "6:30 PM",
           "7:00 PM"
-        ]
+        ],
+        "weekend": []
       },
       "midtown": {
         "weekday": [
@@ -1349,12 +1366,14 @@
           "6:05 PM",
           "6:30 PM",
           "7:00 PM"
-        ]
+        ],
+        "weekend": []
       }
     },
     "portLiberte": {
       "wallStreet": {
-        "weekday": []
+        "weekday": [],
+        "weekend": []
       }
     },
     "wallStreet": {
@@ -1368,7 +1387,8 @@
           "5:10 PM",
           "6:30 PM",
           "7:00 PM"
-        ]
+        ],
+        "weekend": []
       },
       "hobokenNorth": {
         "weekday": [
@@ -1387,7 +1407,8 @@
           "6:30 PM",
           "7:00 PM",
           "7:30 PM"
-        ]
+        ],
+        "weekend": []
       },
       "hobokenSouth": {
         "weekday": [
@@ -1406,7 +1427,8 @@
           "6:05 PM",
           "6:40 PM",
           "7:15 PM"
-        ]
+        ],
+        "weekend": []
       },
       "libertyHarbor": {
         "weekday": [
@@ -1425,7 +1447,8 @@
           "6:00 PM",
           "6:30 PM",
           "7:00 PM"
-        ]
+        ],
+        "weekend": []
       },
       "paulusHook": {
         "weekday": [
@@ -1444,7 +1467,8 @@
           "6:00 PM",
           "6:30 PM",
           "7:00 PM"
-        ]
+        ],
+        "weekend": []
       },
       "portImperial": {
         "weekday": [
@@ -1463,10 +1487,12 @@
           "6:30 PM",
           "7:00 PM",
           "7:30 PM"
-        ]
+        ],
+        "weekend": []
       },
       "portLiberte": {
-        "weekday": []
+        "weekday": [],
+        "weekend": []
       }
     }
   }
