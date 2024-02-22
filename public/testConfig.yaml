@@ -12,3 +12,4 @@ rows:
   - type: citiBike
     title: CitiBike Hudson & 4th
     stationId: 40add0a6-4250-46aa-8e75-939faa87f472
+  - type: clock

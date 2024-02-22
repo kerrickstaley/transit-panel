@@ -1,0 +1,17 @@
+.clock-row {
+    display: flex;
+}
+
+.clock-row > .spacer-left {
+    flex-grow: 1;
+}
+
+.clock-row > .spacer-right {
+    flex-grow: 2;
+}
+
+.clock-time {
+    font-size: 128pt;
+    padding-top: 0.05em;
+    align-self: center;
+}

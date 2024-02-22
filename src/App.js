@@ -2,6 +2,7 @@ import {useState, useEffect, createElement} from 'react';
 import FullscreenButton from './FullscreenButton.js';
 import NyWaterwayRow from './NyWaterwayRow.js';
 import NjTransitRailRow from './NjTransitRailRow.js';
+import ClockRow from './ClockRow.js';
 import CitiBikeRow from './CitiBikeRow.js';
 import PathRow from './PathRow.js';
 import NjTransitBusRow from './NjTransitBusRow.js';
@@ -17,6 +18,7 @@ const rowComponents = (() => {
   // imported row types as needed.
   let ret = {
     CitiBikeRow,
+    ClockRow,
     NjTransitRailRow,
     NyWaterwayRow,
     PathRow,
