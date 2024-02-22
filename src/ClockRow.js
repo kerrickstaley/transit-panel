@@ -30,7 +30,7 @@ export default function ClockRow(props) {
 
     useEffect(() => {
         return pumpTime(setTime);
-    });
+    }, []);
 
     return <div className="row clock-row" style={{backgroundColor: backgroundColor ?? '#f7f697'}}>
         <div className="spacer-left"></div>
