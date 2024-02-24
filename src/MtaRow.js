@@ -5,7 +5,7 @@ import defaultIcon from './images/below_grade_train.png';
 import GtfsRealtimeBindings from "gtfs-realtime-bindings";
 
 async function getGtfsFeed(apiKey, feedId) {
-    const response = await fetch("https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-" + feedId, {
+    const response = await fetch("https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2F" + feedId, {
         headers: {
             "x-api-key": apiKey,
         },
@@ -22,7 +22,31 @@ async function getGtfsFeed(apiKey, feedId) {
     return feed;
 }
 
-function pumpDepartures(apiKey, feedId, routeId, stopId) {
+// return a string like "gtfs-ace" or "gtfs-l" or "gtfs" based on the given routeId.
+function routeIdToFeedId(routeId) {
+    // TODO handle SIR
+    const letterFeedIds = [
+        'ace',
+        'bdfm',
+        'g',
+        'jz',
+        'nqrw',
+        'l',
+    ];
+    if ('1234567'.includes(routeId)) {
+        return 'gtfs';
+    }
+    for (const feedId of letterFeedIds) {
+        if (feedId.includes(routeId.toLowerCase())) {
+            return 'gtfs-' + feedId;
+        }
+    }
+    throw new Error(`Unknown routeId ${routeId}`);
+}
+
+function pumpDepartures(apiKey, routeId, stopId) {
+    let feedId = routeIdToFeedId(routeId);
+
     return setDepartures => {
         let loopTimeoutId = null;
 
@@ -60,7 +84,7 @@ function pumpDepartures(apiKey, feedId, routeId, stopId) {
 }
 
 export default function MtaRow(props) {
-    let { feedId, routeId, stopId, secrets } = props;
+    let { routeId, stopId, secrets } = props;
 
     if (secrets === null) {
         return React.createElement(Row, {
@@ -75,7 +99,7 @@ export default function MtaRow(props) {
     }
 
     let retProps = {
-        pumpDepartures: pumpDepartures(secrets.nycMtaApiKey, feedId, routeId, stopId),
+        pumpDepartures: pumpDepartures(secrets.nycMtaApiKey, routeId, stopId),
         title: props.title ?? `${routeId} from ${stopId}`,
         icon: props.icon ?? defaultIcon,
         backgroundColor: props.backgroundColor ?? '#bbbbbb',
