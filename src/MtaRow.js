@@ -22,26 +22,53 @@ async function getGtfsFeed(apiKey, feedId) {
     return feed;
 }
 
-// return a string like "gtfs-ace" or "gtfs-l" or "gtfs" based on the given routeId.
-function routeIdToFeedId(routeId) {
+function routeIdToGroup(routeId) {
     // TODO handle SIR
-    const letterFeedIds = [
+    const groups = [
         'ace',
         'bdfm',
         'g',
         'jz',
         'nqrw',
         'l',
+        '123',
+        '456',
+        '7',
     ];
-    if ('1234567'.includes(routeId)) {
-        return 'gtfs';
-    }
-    for (const feedId of letterFeedIds) {
-        if (feedId.includes(routeId.toLowerCase())) {
-            return 'gtfs-' + feedId;
+    routeId = routeId.toLowerCase();
+    for (const group of groups) {
+        if (group.includes(routeId)) {
+            return group;
         }
     }
     throw new Error(`Unknown routeId ${routeId}`);
+}
+
+// return a string like "gtfs-ace" or "gtfs-l" or "gtfs" based on the given routeId.
+function routeIdToFeedId(routeId) {
+    const group = routeIdToGroup(routeId);
+    if (['123', '456', '7'].includes(group)) {
+        return 'gtfs';
+    }
+    return 'gtfs-' + group;
+}
+
+function defaultRowColor(routeId) {
+    // These were directly taken from https://new.mta.info/maps
+    // TODO we may want to lighten some of these.
+    const groupToRowColor = {
+        'ace': '#006bb6',
+        'bdfm': '#f89420',
+        'g': '#a5ce3a',
+        'jz': '#af742a',
+        'nqrw': '#ffce06',
+        'l': '#939598',
+        '123': '#ef3c42',
+        '456': '#00a65c',
+        '7': '#b43c96',
+    };
+    const group = routeIdToGroup(routeId);
+    return groupToRowColor[group];
 }
 
 function pumpDepartures(apiKey, routeId, stopId) {
@@ -102,7 +129,7 @@ export default function MtaRow(props) {
         pumpDepartures: pumpDepartures(secrets.nycMtaApiKey, routeId, stopId),
         title: props.title ?? `${routeId} from ${stopId}`,
         icon: props.icon ?? defaultIcon,
-        backgroundColor: props.backgroundColor ?? '#bbbbbb',
+        backgroundColor: props.backgroundColor ?? defaultRowColor(routeId),
         walkMinutes: props.walkMinutes,
     };
 

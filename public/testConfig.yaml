@@ -14,7 +14,12 @@ rows:
     stationId: 40add0a6-4250-46aa-8e75-939faa87f472
   - type: clock
   - type: mta
-    title: R southbound from Herald Sq
+    title: R southbound
     routeId: R
     stopId: R17S
+    walkMinutes: 10
+  - type: mta
+    title: F northbound
+    routeId: F
+    stopId: D17N
     walkMinutes: 10
