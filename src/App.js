@@ -1,4 +1,5 @@
 import {useState, useEffect, createElement} from 'react';
+import ConfigSetup from './ConfigSetup.js';
 import FullscreenButton from './FullscreenButton.js';
 import NyWaterwayRow from './NyWaterwayRow.js';
 import NjTransitRailRow from './NjTransitRailRow.js';
@@ -79,8 +80,8 @@ function App() {
     loadConfig('secrets', configSchema.optionalProperties.secrets, setSecrets, setSecretsError);
   }, []);
 
-  if (secrets !== null) {
-    console.log(secrets);
+  if ((new URLSearchParams(window.location.search)).get('config') === null) {
+    return <ConfigSetup />;
   }
 
   if (configError !== null) {
