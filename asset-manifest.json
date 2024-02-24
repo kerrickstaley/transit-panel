@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/transit-panel/static/css/main.593443e4.css",
-    "main.js": "/transit-panel/static/js/main.dfb0d59d.js",
+    "main.js": "/transit-panel/static/js/main.2c5fcae9.js",
     "static/js/906.6084c7ee.chunk.js": "/transit-panel/static/js/906.6084c7ee.chunk.js",
     "static/media/bicycle.png": "/transit-panel/static/media/bicycle.64a7c392b737f4d38f96.png",
     "static/media/below_grade_train.png": "/transit-panel/static/media/below_grade_train.be61e292f4f8059ae849.png",
@@ -10,11 +10,11 @@
     "static/media/bus.png": "/transit-panel/static/media/bus.dbc87572b112c1f5e61c.png",
     "index.html": "/transit-panel/index.html",
     "main.593443e4.css.map": "/transit-panel/static/css/main.593443e4.css.map",
-    "main.dfb0d59d.js.map": "/transit-panel/static/js/main.dfb0d59d.js.map",
+    "main.2c5fcae9.js.map": "/transit-panel/static/js/main.2c5fcae9.js.map",
     "906.6084c7ee.chunk.js.map": "/transit-panel/static/js/906.6084c7ee.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.593443e4.css",
-    "static/js/main.dfb0d59d.js"
+    "static/js/main.2c5fcae9.js"
   ]
 }

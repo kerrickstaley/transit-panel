@@ -10,12 +10,16 @@ rows:
     destination: brookfield
     walkMinutes: 10
   - type: citiBike
-    title: CitiBike Hudson & 4th
-    stationId: 40add0a6-4250-46aa-8e75-939faa87f472
+    title: CitiBike River & 4th
+    stationId: "1839334257267825432"
   - type: clock
   - type: mta
-    title: N southbound from Herald Sq
-    feedId: nqrw
+    title: R southbound
     routeId: R
     stopId: R17S
+    walkMinutes: 10
+  - type: mta
+    title: F northbound
+    routeId: F
+    stopId: D17N
     walkMinutes: 10
