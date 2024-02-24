@@ -24,5 +24,14 @@
                 "additionalProperties": true
             }
         }
+    },
+    "optionalProperties": {
+        "secrets": {
+            "properties": {
+                "nycMtaApiKey": {
+                    "type": "string"
+                }
+            }
+        }
     }
 }

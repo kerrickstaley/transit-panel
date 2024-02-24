@@ -88,7 +88,7 @@ export default function MtaRow(props) {
 
     if (secrets === null) {
         return React.createElement(Row, {
-            configError: `secrets file isn't configured (or hasn't finished loading). Please put secrets= in the URL.`
+            configError: `secrets file isn't configured (or hasn't finished loading). Please put secrets section in config file or secrets= in the URL.`
         });
     }
 

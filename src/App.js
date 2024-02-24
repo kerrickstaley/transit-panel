@@ -11,7 +11,6 @@ import YAML from 'yaml';
 import Ajv from 'ajv/dist/jtd';
 import { betterAjvErrors } from '@apideck/better-ajv-errors';
 import configSchema from './configSchema.json';
-import secretsSchema from './secretsSchema.json';
 
 const ajv = new Ajv({allErrors: true});
 
@@ -77,7 +76,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    loadConfig('secrets', secretsSchema, setSecrets, setSecretsError);
+    loadConfig('secrets', configSchema.optionalProperties.secrets, setSecrets, setSecretsError);
   }, []);
 
   if (secrets !== null) {
@@ -90,6 +89,10 @@ function App() {
 
   if (config === null) {
     return <div>Loading config...</div>;
+  }
+
+  if (secrets === null && config.secrets !== undefined) {
+    setSecrets(config.secrets);
   }
 
   let rows = [];
