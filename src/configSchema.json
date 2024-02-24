@@ -27,7 +27,7 @@
     },
     "optionalProperties": {
         "secrets": {
-            "properties": {
+            "optionalProperties": {
                 "nycMtaApiKey": {
                     "type": "string"
                 }
