@@ -32,7 +32,7 @@ export default function ClockRow(props) {
         return pumpTime(setTime);
     }, []);
 
-    return <div className="row clock-row" style={{backgroundColor: backgroundColor ?? '#f7f697'}}>
+    return <div className="row clock-row" style={{backgroundColor: backgroundColor ?? '#f7bcd6'}}>
         <div className="spacer-left"></div>
         <div className="clock-time">{time}</div>
         <div className="spacer-right"></div>
