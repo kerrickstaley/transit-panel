@@ -13,3 +13,9 @@ rows:
     title: CitiBike Hudson & 4th
     stationId: 40add0a6-4250-46aa-8e75-939faa87f472
   - type: clock
+  - type: mta
+    title: N southbound from Herald Sq
+    feedId: nqrw
+    routeId: R
+    stopId: R17S
+    walkMinutes: 10
