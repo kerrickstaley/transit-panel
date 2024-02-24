@@ -10,8 +10,8 @@ rows:
     destination: brookfield
     walkMinutes: 10
   - type: citiBike
-    title: CitiBike Hudson & 4th
-    stationId: 40add0a6-4250-46aa-8e75-939faa87f472
+    title: CitiBike River & 4th
+    stationId: "1839334257267825432"
   - type: clock
   - type: mta
     title: R southbound
