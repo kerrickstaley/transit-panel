@@ -4,12 +4,14 @@ import NyWaterwayRow from './NyWaterwayRow.js';
 import NjTransitRailRow from './NjTransitRailRow.js';
 import ClockRow from './ClockRow.js';
 import CitiBikeRow from './CitiBikeRow.js';
+import MtaRow from './MtaRow.js';
 import PathRow from './PathRow.js';
 import NjTransitBusRow from './NjTransitBusRow.js';
 import YAML from 'yaml';
 import Ajv from 'ajv/dist/jtd';
 import { betterAjvErrors } from '@apideck/better-ajv-errors';
 import configSchema from './configSchema.json';
+import secretsSchema from './secretsSchema.json';
 
 const ajv = new Ajv({allErrors: true});
 
@@ -19,6 +21,7 @@ const rowComponents = (() => {
   let ret = {
     CitiBikeRow,
     ClockRow,
+    MtaRow,
     NjTransitRailRow,
     NyWaterwayRow,
     PathRow,
@@ -36,12 +39,12 @@ configSchema['properties']['rows']['elements']['properties']['type'] = {
   enum: Object.keys(rowComponents),
 };
 
-function loadConfig(setConfig, setConfigError) {
+function loadConfig(name, schema, setConfig, setConfigError) {
   const urlParams = new URLSearchParams(window.location.search);
-  let configUrl = urlParams.get('config');
+  let configUrl = urlParams.get(name);
   if (configUrl === null) {
     setConfigError(
-      'Config param not specified in URL! Please put ?config=<your config YAML URL> in the URL.'
+      `${name} param not specified in URL! Please put ?${name}=<your ${name} YAML URL> in the URL.`
     );
     return;
   }
@@ -52,9 +55,9 @@ function loadConfig(setConfig, setConfigError) {
   .then(text => {
     let config = YAML.parse(text);
 
-    if (!ajv.validate(configSchema, config)) {
+    if (!ajv.validate(schema, config)) {
       const betterErrors = betterAjvErrors({configSchema, config, errors: ajv.errors});
-      setConfigError('Invalid config: ' + JSON.stringify(betterErrors));
+      setConfigError(`Invalid ${name}: ` + JSON.stringify(betterErrors));
       return;
     }
 
@@ -65,13 +68,24 @@ function loadConfig(setConfig, setConfigError) {
 function App() {
   let [config, setConfig] = useState(null);
   let [configError, setConfigError] = useState(null);
+  let [secrets, setSecrets] = useState(null);
+  // eslint-disable-next-line no-unused-vars
+  let [secretsError, setSecretsError] = useState(null);
 
   useEffect(() => {
-    loadConfig(setConfig, setConfigError);
+    loadConfig('config', configSchema, setConfig, setConfigError);
   }, []);
 
+  useEffect(() => {
+    loadConfig('secrets', secretsSchema, setSecrets, setSecretsError);
+  }, []);
+
+  if (secrets !== null) {
+    console.log(secrets);
+  }
+
   if (configError !== null) {
-    return <div>Config error: {configError}</div>;
+    return <div>Error: {configError}</div>;
   }
 
   if (config === null) {
@@ -83,6 +97,7 @@ function App() {
     let rowComponent = rowComponents[row['type']];
     let props = Object.assign({}, row);
     delete props['type'];
+    props['secrets'] = secrets;
     rows.push(createElement(rowComponent, props));
   }
   return createElement('div', {}, ...rows, <FullscreenButton />);
