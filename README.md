@@ -6,6 +6,7 @@ This web app displays nearby transit options, along with how soon you need to le
 [You can view the app live here.](https://www.kerrickstaley.com/transit-panel/?config=https://gist.githubusercontent.com/kerrickstaley/515920f7d552bc8027dc57eed4ec76b8/raw)
 
 The app currently supports these transit systems:
+- [NYC MTA aka the subway](https://new.mta.info/) (full support, including real-time departures)
 - [PATH](https://www.panynj.gov/path/en/index.html) (full support, including real-time departures)
 - [NY Waterway](https://www.nywaterway.com/) (full support, schedule-only since there is no real-time data)
 - [NJ Transit](https://www.njtransit.com/) (very limited support, schedule-only)
